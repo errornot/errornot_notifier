@@ -1,8 +1,9 @@
+require 'restclient'
 module HoptoadNotifier
   # Sends out the notice to Hoptoad
   class Sender
 
-    NOTICES_URI = '/notifier_api/v2/notices/'.freeze
+    NOTICES_URI = '/errors'.freeze
 
     def initialize(options = {})
       [:proxy_host, :proxy_port, :proxy_user, :proxy_pass, :protocol,
@@ -26,7 +27,9 @@ module HoptoadNotifier
       http.use_ssl      = secure
 
       response = begin
-                   http.post(url.path, data, HEADERS)
+                   # TODO see how use http.post or convert all to restclient
+                   RestClient.post(url.to_s, data)
+                   #http.post(url, data, HEADERS)
                  rescue TimeoutError => e
                    log :error, "Timeout while contacting the Hoptoad server."
                    nil

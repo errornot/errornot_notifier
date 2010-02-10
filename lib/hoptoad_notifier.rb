@@ -12,12 +12,12 @@ require 'hoptoad_notifier/rack'
 # Gem for applications to automatically post errors to the Hoptoad of their choice.
 module HoptoadNotifier
 
-  API_VERSION = "2.0"
-  LOG_PREFIX = "** [Hoptoad] "
+  API_VERSION = "1.0"
+  LOG_PREFIX = "** [ErrorNot Logger] "
 
   HEADERS = {
-    'Content-type'             => 'text/xml',
-    'Accept'                   => 'text/xml, application/xml'
+    'Content-type'             => 'text/json',
+    'Accept'                   => 'text/json'
   }
 
   class << self

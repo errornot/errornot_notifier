@@ -96,59 +96,36 @@ module HoptoadNotifier
 
     # Converts the given notice to XML
     def to_xml
-      builder = Builder::XmlMarkup.new
-      builder.instruct!
-      xml = builder.notice(:version => HoptoadNotifier::API_VERSION) do |notice|
-        notice.tag!("api-key", api_key)
-        notice.notifier do |notifier|
-          notifier.name(notifier_name)
-          notifier.version(notifier_version)
-          notifier.url(notifier_url)
+      error = {
+        'message' => error_message,
+        'raised_at' => Time.now,
+        'backtrace' =>  self.backtrace.lines}
+      if url ||
+        controller ||
+        action ||
+        !parameters.blank? ||
+        !cgi_data.blank? ||
+        !session_data.blank?
+
+        error['request'] = {'url' => url,
+          'component' => controller,
+          'action' => action}
+
+        unless parameters.blank?
+          error['request']['params'] = parameters
         end
-        notice.error do |error|
-          error.tag!('class', error_class)
-          error.message(error_message)
-          error.backtrace do |backtrace|
-            self.backtrace.lines.each do |line|
-              backtrace.line(:number => line.number,
-                             :file   => line.file,
-                             :method => line.method)
-            end
-          end
+
+        unless session_data.blank?
+          error['session'] = session_data
         end
-        if url ||
-            controller ||
-            action ||
-            !parameters.blank? ||
-            !cgi_data.blank? ||
-            !session_data.blank?
-          notice.request do |request|
-            request.url(url)
-            request.component(controller)
-            request.action(action)
-            unless parameters.blank?
-              request.params do |params|
-                xml_vars_for(params, parameters)
-              end
-            end
-            unless session_data.blank?
-              request.session do |session|
-                xml_vars_for(session, session_data)
-              end
-            end
-            unless cgi_data.blank?
-              request.tag!("cgi-data") do |cgi_datum|
-                xml_vars_for(cgi_datum, cgi_data)
-              end
-            end
-          end
-        end
-        notice.tag!("server-environment") do |env|
-          env.tag!("project-root", project_root)
-          env.tag!("environment-name", environment_name)
+
+        unless cgi_data.blank?
+          error['request'].merge(cgi_data)
         end
       end
-      xml.to_s
+      {'error' => error,
+        'api_key' => api_key,
+        'version' => '0.1.0'}
     end
 
     # Determines if this notice should be ignored

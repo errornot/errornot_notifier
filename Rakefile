@@ -36,9 +36,9 @@ VERSION_FILE = File.join(GEM_ROOT, 'lib', 'hoptoad_notifier', 'version')
 require VERSION_FILE
 
 gemspec = Gem::Specification.new do |s|
-  s.name        = %q{hoptoad_notifier}
+  s.name        = %q{errornot_notifier}
   s.version     = HoptoadNotifier::VERSION
-  s.summary     = %q{Send your application errors to our hosted service and reclaim your inbox.}
+  s.summary     = %q{Send your application errors to a hosted service and reclaim your inbox.}
 
   s.files        = FileList['[A-Z]*', 'generators/**/*.*', 'lib/**/*.rb',
                             'test/**/*.rb', 'rails/**/*.rb', 'script/*',
