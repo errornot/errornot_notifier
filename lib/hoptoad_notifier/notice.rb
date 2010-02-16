@@ -95,6 +95,9 @@ module HoptoadNotifier
     end
 
     # Converts the given notice to XML
+    # TODO:
+    #  ErroNot specific, not transform to XML now,
+    #  but in Hash. need change name
     def to_xml
       error = {
         'message' => error_message,
@@ -120,8 +123,10 @@ module HoptoadNotifier
         end
 
         unless cgi_data.blank?
-          error['request'].merge(cgi_data)
+          error['request']['cgi-data'] = cgi_data
         end
+        error['environment'] = {'root' => project_root,
+                                'name' => environment_name}
       end
       {'error' => error,
         'api_key' => api_key,

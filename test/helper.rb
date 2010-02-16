@@ -170,13 +170,6 @@ class Test::Unit::TestCase
     end
   end
 
-  def assert_valid_node(document, xpath, content)
-    nodes = document.xpath(xpath)
-    assert nodes.any?{|node| node.content == content },
-           "Expected xpath #{xpath} to have content #{content}, " +
-           "but found #{nodes.map { |n| n.content }} in #{nodes.size} matching nodes." +
-           "Document:\n#{document.to_s}"
-  end
 end
 
 module DefinesConstants

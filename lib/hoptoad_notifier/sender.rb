@@ -12,6 +12,25 @@ module HoptoadNotifier
       end
     end
 
+    # Methode extract from RestClient
+    # maybe need some test
+    def process_payload(p=nil, parent_key=nil)
+      unless p.is_a?(Hash)
+        p
+      else
+        p.keys.map do |k|
+          key = parent_key ? "#{parent_key}[#{k}]" : k
+          if p[k].is_a? Hash
+            process_payload(p[k], key)
+          else
+            value = URI.escape(p[k].to_s, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+            "#{key}=#{value}"
+          end
+        end.join("&")
+      end
+    end
+
+
     # Sends the notice data off to Hoptoad for processing.
     #
     # @param [String] data The XML notice to be sent off
@@ -28,8 +47,9 @@ module HoptoadNotifier
 
       response = begin
                    # TODO see how use http.post or convert all to restclient
-                   RestClient.post(url.to_s, data)
-                   #http.post(url, data, HEADERS)
+                   #RestClient.post(url.to_s, data)
+                   data = process_payload(data)
+                   http.post(url.path, data, HEADERS)
                  rescue TimeoutError => e
                    log :error, "Timeout while contacting the Hoptoad server."
                    nil

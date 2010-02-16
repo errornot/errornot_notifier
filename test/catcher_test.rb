@@ -23,28 +23,13 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
     end
   end
 
-  def assert_sent_hash(hash, xpath)
-    hash.each do |key, value|
-      element_xpath = "#{xpath}/var[@key = '#{key}']"
-      if value.respond_to?(:to_hash)
-        assert_sent_hash value.to_hash, element_xpath
-      else
-        assert_sent_element value.to_s, element_xpath
-      end
-    end
-  end
-
-  def assert_sent_element(value, xpath)
-    assert_valid_node last_sent_notice_document, xpath, value
-  end
-
   def assert_sent_request_info_for(request)
     params = request.parameters.to_hash
-    assert_sent_hash params, '/notice/request/params'
-    assert_sent_element params['controller'], '/notice/request/component'
-    assert_sent_element params['action'], '/notice/request/action'
-    assert_sent_element url_from_request(request), '/notice/request/url'
-    assert_sent_hash request.env, '/notice/request/cgi-data'
+    assert_equal params, last_sent_notice_document['error']['request']['params']
+    assert_equal params['controller'], last_sent_notice_document['error']['request']['component']
+    assert_equal params['action'], last_sent_notice_document['error']['request']['action']
+    assert_equal url_from_request(request), last_sent_notice_document['error']['request']['url']
+    assert_equal request.env.keys.sort, last_sent_notice_document['error']['request']['cgi-data'].keys.sort
   end
 
   def url_from_request(request)
@@ -68,7 +53,7 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
 
   def last_sent_notice_document
     assert_not_nil xml = last_sent_notice_xml, "No xml was sent"
-    Nokogiri::XML.parse(xml)
+    xml
   end
 
   def process_action(opts = {}, &action)
@@ -92,7 +77,7 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
       end
     end
     if opts[:port]
-      opts[:request].port = opts[:port]
+      opts[:request].port = opts[:port].to_s
     end
     klass.consider_all_requests_local = opts[:all_local]
     klass.local                       = opts[:local]
@@ -196,13 +181,13 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
   should "send session data for manual notifications" do
     data = { 'one' => 'two' }
     process_action_with_manual_notification(:session => data)
-    assert_sent_hash data, "/notice/request/session"
+    assert_equal data, last_sent_notice_document['error']['session']
   end
 
   should "send session data for automatic notification" do
     data = { 'one' => 'two' }
     process_action_with_automatic_notification(:session => data)
-    assert_sent_hash data, "/notice/request/session"
+    assert_equal data, last_sent_notice_document['error']['session']
   end
 
   should "send request data for manual notification" do
@@ -241,8 +226,9 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
                                                :params => { "abc" => "123",
                                                             "def" => "456",
                                                             "ghi" => "789" })
-    assert_sent_hash filtered_params, '/notice/request/params'
-    assert_sent_hash filtered_cgi, '/notice/request/cgi-data'
+    assert_equal filtered_params, last_sent_notice_document['error']['request']['params']
+    assert last_sent_notice_document['error']['request']['cgi-data'].include?('REQUEST_METHOD')
+    assert_equal '[FILTERED]', last_sent_notice_document['error']['request']['cgi-data']['REQUEST_METHOD']
   end
 
   context "for a local error with development lookup enabled" do

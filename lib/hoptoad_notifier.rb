@@ -16,7 +16,7 @@ module HoptoadNotifier
   LOG_PREFIX = "** [ErrorNot Logger] "
 
   HEADERS = {
-    'Content-type'             => 'text/json',
+    'Content-type'             => 'application/x-www-form-urlencoded',
     'Accept'                   => 'text/json'
   }
 

@@ -174,7 +174,7 @@ class NoticeTest < Test::Unit::TestCase
 
       @notice = build_notice({
         :notifier_name    => 'a name',
-        :notifier_version => '1.2.3',
+        :notifier_version => '0.1.0',
         :notifier_url     => 'http://some.url/path',
         :exception        => @exception,
         :controller       => "controller",
@@ -188,9 +188,7 @@ class NoticeTest < Test::Unit::TestCase
         :environment_name => "RAILS_ENV"
       })
 
-      @xml = @notice.to_xml
-
-      @document = Nokogiri::XML::Document.parse(@xml)
+      @document = @notice.to_xml
     end
 
     should "validate against the XML schema" do
@@ -198,35 +196,23 @@ class NoticeTest < Test::Unit::TestCase
     end
 
     should "serialize a Notice to XML when sent #to_xml" do
-      assert_valid_node(@document, "//api-key", @notice.api_key)
+      assert_equal @document['api_key'], @notice.api_key
 
-      assert_valid_node(@document, "//notifier/name",    @notice.notifier_name)
-      assert_valid_node(@document, "//notifier/version", @notice.notifier_version)
-      assert_valid_node(@document, "//notifier/url",     @notice.notifier_url)
+      assert_equal @document['version'], @notice.notifier_version
+      assert_equal @document['error']['message'], @notice.error_message
+      #assert_equal @document['error']['raised_at'], Time.now
+      assert_equal @document['error']['backtrace'], @notice.backtrace.lines
 
-      assert_valid_node(@document, "//error/class",   @notice.error_class)
-      assert_valid_node(@document, "//error/message", @notice.error_message)
+      assert_equal @document['error']['request']['url'], @notice.url
+      assert_equal @document['error']['request']['component'], @notice.controller
+      assert_equal @document['error']['request']['action'], @notice.action
 
-      assert_valid_node(@document, "//error/backtrace/line/@number", @notice.backtrace.lines.first.number)
-      assert_valid_node(@document, "//error/backtrace/line/@file", @notice.backtrace.lines.first.file)
-      assert_valid_node(@document, "//error/backtrace/line/@method", @notice.backtrace.lines.first.method)
+      assert_equal @document['error']['environment']['root'], "RAILS_ROOT"
+      assert_equal @document['error']['environment']['name'], "RAILS_ENV"
 
-      assert_valid_node(@document, "//request/url",        @notice.url)
-      assert_valid_node(@document, "//request/component", @notice.controller)
-      assert_valid_node(@document, "//request/action",     @notice.action)
-
-      assert_valid_node(@document, "//request/params/var/@key",     "paramskey")
-      assert_valid_node(@document, "//request/params/var",          "paramsvalue")
-      assert_valid_node(@document, "//request/params/var/@key",     "nestparentkey")
-      assert_valid_node(@document, "//request/params/var/var/@key", "nestkey")
-      assert_valid_node(@document, "//request/params/var/var",      "nestvalue")
-      assert_valid_node(@document, "//request/session/var/@key",    "sessionkey")
-      assert_valid_node(@document, "//request/session/var",         "sessionvalue")
-      assert_valid_node(@document, "//request/cgi-data/var/@key",   "cgikey")
-      assert_valid_node(@document, "//request/cgi-data/var",        "cgivalue")
-
-      assert_valid_node(@document, "//server-environment/project-root",     "RAILS_ROOT")
-      assert_valid_node(@document, "//server-environment/environment-name", "RAILS_ENV")
+      assert_equal @document['error']['request']['params'], {"paramskey"=>"paramsvalue", "nestparentkey"=>{"nestkey"=>"nestvalue"}}
+      assert_equal @document['error']['session'], { "sessionkey" => "sessionvalue" }
+      assert_equal @document['error']['request']['cgi-data'], { "cgikey" => "cgivalue" }
     end
   end
 
@@ -236,11 +222,8 @@ class NoticeTest < Test::Unit::TestCase
     assert_nil notice.controller
     assert_nil notice.action
 
-    xml = notice.to_xml
-    document = Nokogiri::XML.parse(xml)
-    assert_nil document.at('//request/url')
-    assert_nil document.at('//request/component')
-    assert_nil document.at('//request/action')
+    document = notice.to_xml
+    assert !document['error'].key?('request')
 
     assert_valid_notice_document document
   end
@@ -248,18 +231,16 @@ class NoticeTest < Test::Unit::TestCase
   %w(url controller action).each do |var|
     should "send a request if #{var} is present" do
       notice = build_notice(var.to_sym => 'value')
-      xml = notice.to_xml
-      document = Nokogiri::XML.parse(xml)
-      assert_not_nil document.at('//request')
+      document = notice.to_xml
+      assert document['error'].key?('request')
     end
   end
 
   %w(parameters cgi_data session_data).each do |var|
     should "send a request if #{var} is present" do
       notice = build_notice(var.to_sym => { 'key' => 'value' })
-      xml = notice.to_xml
-      document = Nokogiri::XML.parse(xml)
-      assert_not_nil document.at('//request')
+      document = notice.to_xml
+      assert !document['error']['request'].empty?
     end
   end
 
@@ -390,10 +371,7 @@ class NoticeTest < Test::Unit::TestCase
   end
 
   def assert_valid_notice_document(document)
-    xsd_path = File.join(File.dirname(__FILE__), "hoptoad_2_0.xsd")
-    schema = Nokogiri::XML::Schema.new(IO.read(xsd_path))
-    errors = schema.validate(document)
-    assert errors.empty?, errors.collect{|e| e.message }.join
+    assert document.kind_of?(Hash)
   end
 
   def assert_filters_hash(attribute)
