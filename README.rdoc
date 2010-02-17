@@ -1,14 +1,9 @@
-= HoptoadNotifier
+= ErrorNotNotifier
 
-This is the notifier gem for integrating apps with Hoptoad.
+This is the notifier gem for integrating apps with your ErrorNot application
 
-When an uncaught exception occurs, HoptoadNotifier will POST the relevant data 
-to the Hoptoad server specified in your environment.
-
-== Help
-
-* {IRC}[irc://irc.freenode.net/thoughtbot]
-* {mailing list}[http://groups.google.com/group/hoptoad-notifier-dev]
+When an uncaught exception occurs, ErrorNotNotifier will POST the relevant data
+to your errorNot application server specified in your environment.
 
 == Rails Installation
 
@@ -22,41 +17,35 @@ In your config/environment* files, remove all references to ExceptionNotifier
 
 Remove the vendor/plugins/exception_notifier directory.
 
-=== Remove hoptoad_notifier plugin
-
-Remove the vendor/plugins/hoptoad_notifier directory before installing the gem, or run:
-
-  script/plugin remove hoptoad_notifier
-
 === Rails 2.x
 
-Add the hoptoad_notifier gem to your app. In config/environment.rb:
+Add the errornot_notifier gem to your app. In config/environment.rb:
 
-  config.gem 'hoptoad_notifier'
+  config.gem 'errornot_notifier', :lib => 'hoptoad_notifier'
 
 Then from your project's RAILS_ROOT, run:
 
   rake gems:install
-  script/generate hoptoad --api-key your_key_here
+  script/generate hoptoad --api-key your_key_here --server your_host
 
 Once installed, you should vendor the hoptoad_notifier gem.
 
-  rake gems:unpack GEM=hoptoad_notifier
+  rake gems:unpack GEM=errornot_notifier
 
-As always, if you choose not to vendor the hoptoad_notifier gem, make sure
+As always, if you choose not to vendor the errornot_notifier gem, make sure
 every server you deploy to has the gem installed or your application won't start.
 
 === Rails 1.2.6
 
-Install the hoptoad_notifier gem: 
+Install the errornot_notifier gem:
 
-  gem install hoptoad_notifier
+  gem install errornot_notifier
 
 Once installed, you should vendor the hoptoad_notifier gem:
 
   mkdir vendor/gems
   cd vendor/gems
-  gem unpack hoptoad_notifier
+  gem unpack errornot_notifier
 
 And then add the following to the Rails::Initializer.run do |config|
 block in environment.rb so that the vendored gem is loaded.
@@ -70,24 +59,25 @@ Next add something like this at the bottom of your config/environment.rb:
   require 'hoptoad_notifier/rails'
   HoptoadNotifier.configure do |config|
     config.api_key = 'your_key_here'
+    config.host = 'host_of_your_errornot_instance'
   end
 
 You will also need to copy the hoptoad_notifier_tasks.rake file into your
 RAILS_ROOT/lib/tasks directory in order for the rake hoptoad:test task to work:
 
-  cp vendor/gems/hoptoad_notifier-2.1.3/generators/hoptoad/templates/hoptoad_notifier_tasks.rake lib/tasks 
+  cp vendor/gems/errornot_notifier-0.1.0/generators/hoptoad/templates/hoptoad_notifier_tasks.rake lib/tasks
 
-As always, if you choose not to vendor the hoptoad_notifier gem, make sure
+As always, if you choose not to vendor the errornot_notifier gem, make sure
 every server you deploy to has the gem installed or your application won't start.
 
 === Testing it out
 
-You can test that Hoptoad is working in your production environment by using 
+You can test that ErrorNot is working in your production environment by using
 this rake task (from RAILS_ROOT):
 
   rake hoptoad:test
 
-If everything is configured properly, that task will send a notice to Hoptoad 
+If everything is configured properly, that task will send a notice to Hoptoad
 which will be visible immediately.
 
 == Rack
@@ -101,6 +91,7 @@ middleware:
 
   HoptoadNotifier.configure do |config|
     config.api_key = 'my_api_key'
+    config.host = 'host_of_your_errornot_instance'
   end
 
   app = Rack::Builder.app do
@@ -110,7 +101,7 @@ middleware:
 
 == Sinatra
 
-Using hoptoad_notifier in a Sinatra app is just like a Rack app, but you have
+Using errornot_notifier in a Sinatra app is just like a Rack app, but you have
 to disable Sinatra's error rescuing functionality:
 
   require 'sinatra/base'
@@ -118,6 +109,7 @@ to disable Sinatra's error rescuing functionality:
 
   HoptoadNotifier.configure do |config|
     config.api_key = 'my_api_key'
+    config.host =' host_of_your_errornot_instance'
   end
 
   class MyApp < Sinatra::Default
@@ -131,11 +123,11 @@ to disable Sinatra's error rescuing functionality:
 
 == Usage
 
-For the most part, Hoptoad works for itself.  Once you've included the notifier 
-in your ApplicationController (which is now done automatically by the gem), 
+For the most part, ErrorNot works for itself.  Once you've included the notifier
+in your ApplicationController (which is now done automatically by the gem),
 all errors will be rescued by the #rescue_action_in_public provided by the gem.
 
-If you want to log arbitrary things which you've rescued yourself from a 
+If you want to log arbitrary things which you've rescued yourself from a
 controller, you can do something like this:
 
   ...
@@ -153,7 +145,7 @@ To perform custom error processing after Hoptoad has been notified, define the
 instance method #rescue_action_in_public_without_hoptoad(exception) in your
 controller.
 
-== Tracking deployments in Hoptoad
+== Tracking deployments in Hoptoad ( It's not implement in ErrorNot )
 
 Paying Hoptoad plans support the ability to track deployments of your application in Hoptoad.
 By notifying Hoptoad of your application deployments, all errors are resolved when a deploy occurs,
@@ -175,7 +167,7 @@ controllers:
 
   begin
     params = {
-      # params that you pass to a method that can throw an exception 
+      # params that you pass to a method that can throw an exception
     }
     my_unpredicable_method(params)
   rescue => e
@@ -208,11 +200,11 @@ You can override any of those parameters.
 
 == Filtering
 
-You can specify a whitelist of errors, that Hoptoad will not report on.  Use 
-this feature when you are so apathetic to certain errors that you don't want 
+You can specify a whitelist of errors, that Hoptoad will not report on.  Use
+this feature when you are so apathetic to certain errors that you don't want
 them even logged.
 
-This filter will only be applied to automatic notifications, not manual 
+This filter will only be applied to automatic notifications, not manual
 notifications (when #notify is called directly).
 
 Hoptoad ignores the following exceptions by default:
@@ -223,7 +215,7 @@ Hoptoad ignores the following exceptions by default:
   ActionController::UnknownAction
   CGI::Session::CookieStore::TamperedWithCookie
 
-To ignore errors in addition to those, specify their names in your Hoptoad 
+To ignore errors in addition to those, specify their names in your Hoptoad
 configuration block.
 
   HoptoadNotifier.configure do |config|
@@ -231,7 +223,7 @@ configuration block.
     config.ignore       << ActiveRecord::IgnoreThisError
   end
 
-To ignore *only* certain errors (and override the defaults), use the 
+To ignore *only* certain errors (and override the defaults), use the
 #ignore_only attribute.
 
   HoptoadNotifier.configure do |config|
@@ -270,8 +262,8 @@ hoptoad_notifier will reuse filters specified by #filter_params_logging.
 == Testing
 
 When you run your tests, you might notice that the Hoptoad service is recording
-notices generated using #notify when you don't expect it to.  You can 
-use code like this in your test_helper.rb to redefine that method so those 
+notices generated using #notify when you don't expect it to.  You can
+use code like this in your test_helper.rb to redefine that method so those
 errors are not reported while running tests.
 
   module HoptoadNotifier
@@ -293,3 +285,5 @@ not working properly.
 
 Thanks to Eugene Bolshakov for the excellent write-up on GOING BEYOND
 EXCEPTIONS, which we have included above.
+
+Thanks to thoughtbot, to create this gem before we updated it to use with errornot
