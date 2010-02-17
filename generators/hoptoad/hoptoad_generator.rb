@@ -3,16 +3,18 @@ require File.expand_path(File.dirname(__FILE__) + "/lib/rake_commands.rb")
 
 class HoptoadGenerator < Rails::Generator::Base
   def add_options!(opt)
-    opt.on('-k', '--api-key=key', String, "Your Hoptoad API key") {|v| options[:api_key] = v}
+    opt.on('-k', '--api-key=key', String, "Your ErrorNot API key") {|v| options[:api_key] = v}
+    opt.on('-s', '--server=host', String, "Your host with errorNot is installed") {|v| options[:host] = v}
   end
 
   def manifest
     if !api_key_configured? && !options[:api_key]
-      puts "Must pass --api-key or create config/initializers/hoptoad.rb"
+      puts "Must pass --api-key or create config/initializers/errornot.rb"
       exit
     end
-    if plugin_is_present?
-      puts "You must first remove the hoptoad_notifier plugin. Please run: script/plugin remove hoptoad_notifier"
+
+    if !api_key_configured? && !options[:host]
+      puts "Must pass --server or create config/initializers/errornot.rb"
       exit
     end
     record do |m|
@@ -23,11 +25,13 @@ class HoptoadGenerator < Rails::Generator::Base
       end
       if options[:api_key]
         if use_initializer?
-          m.template 'initializer.rb', 'config/initializers/hoptoad.rb',
-            :assigns => {:api_key => options[:api_key]}
+          m.template 'initializer.rb', 'config/initializers/errornot.rb',
+            :assigns => {:api_key => options[:api_key],
+          :host => options[:host]}
         else
-          m.template 'initializer.rb', 'config/hoptoad.rb',
-            :assigns => {:api_key => options[:api_key]}
+          m.template 'initializer.rb', 'config/errornot.rb',
+            :assigns => {:api_key => options[:api_key],
+          :host => options[:host]}
           m.append_to 'config/environment.rb', "require 'config/hoptoad'"
         end
       end
@@ -47,8 +51,5 @@ class HoptoadGenerator < Rails::Generator::Base
   def capistrano_hook
     IO.read(source_path('capistrano_hook.rb'))
   end
-  
-  def plugin_is_present?
-    File.exists?('vendor/plugins/hoptoad_notifier')
-  end
+
 end
