@@ -1,7 +1,7 @@
 Feature: Use the notifier in a plain Rack app
 
   Background:
-    Given I have built and installed the "hoptoad_notifier" gem
+    Given I have built and installed the "errornot_notifier" gem
 
   Scenario: Rescue and exception in a Rack app
     Given the following Rack app:

@@ -16,7 +16,7 @@ end
 When /^I configure my application to require the "([^\"]*)" gem$/ do |gem_name|
   if rails_manages_gems?
     run = "Rails::Initializer.run do |config|"
-    insert = "  config.gem '#{gem_name}'"
+    insert = "  config.gem '#{gem_name}', :lib => 'hoptoad_notifier'"
     content = File.read(environment_path)
     if content.sub!(run, "#{run}\n#{insert}")
       File.open(environment_path, 'wb') { |file| file.write(content) }
@@ -42,11 +42,11 @@ When /^I run "([^\"]*)"$/ do |command|
 end
 
 Then /^I should receive a Hoptoad notification$/ do
-  Then %{I should see "[Hoptoad] Success: Net::HTTPOK"}
+  Then %{I should see "[ErrorNot Logger] Success: Net::HTTPOK"}
 end
 
 Then /^I should receive two Hoptoad notifications$/ do
-  @terminal.output.scan(/\[Hoptoad\] Success: Net::HTTPOK/).size.should == 2
+  @terminal.output.scan(/\[ErrorNot Logger\] Success: Net::HTTPOK/).size.should == 2
 end
 
 When /^I configure the Hoptoad shim$/ do
@@ -169,28 +169,28 @@ Then /^I should receive the following Hoptoad notification:$/ do |table|
   exceptions = @terminal.output.scan(%r{Recieved the following exception:\n([^\n]*)\n}m)
   exceptions.should_not be_empty
 
-  xml = exceptions.last[0]
-  doc = Nokogiri::XML.parse(xml)
+  doc = exceptions.last[0]
 
   hash = table.transpose.hashes.first
 
-  doc.should have_content('//error/message', hash['error message'])
-  doc.should have_content('//error/class',   hash['error class'])
-  doc.should have_content('//request/url',   hash['url'])
+  doc.should be_include("error[message]=#{URI.escape(hash['error message'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
+  doc.should be_include("error[request][url]=#{URI.escape(hash['url'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
 
-  doc.should have_content('//component', hash['component']) if hash['component']
-  doc.should have_content('//action', hash['action']) if hash['action']
+  doc.should be_include("error[request][component]=#{URI.escape(hash['component'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}") if hash['component']
+  doc.should be_include("error[request][action]=#{URI.escape(hash['action'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}") if hash['action']
 
   if hash['session']
-    session_key, session_value = hash['session'].split(': ')
-    doc.should have_content('//request/session/var/@key', session_key)
-    doc.should have_content('//request/session/var',      session_value)
+    sessions = hash['session'].split(': ')
+    sessions.each_slice(2).each do |session|
+      doc.should be_include("error[session][#{session[0]}]=#{URI.escape(session[1], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
+    end
   end
 
   if hash['parameters']
-    param_key, param_value     = hash['parameters'].split(': ')
-    doc.should have_content('//request/params/var/@key',  param_key)
-    doc.should have_content('//request/params/var',       param_value)
+    params = hash['parameters'].split(': ')
+    params.each_slice(2).each do |param|
+      doc.should be_include("error[request][params][#{param[0]}]=#{URI.escape(param[1], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
+    end
   end
 end
 

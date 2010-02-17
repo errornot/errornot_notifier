@@ -7,6 +7,7 @@ When /^I perform a Rack request to "([^\"]*)"$/ do |url|
   request_file = File.join(TEMP_DIR, 'rack_request.rb')
   File.open(request_file, 'w') do |file|
     file.puts "require 'rubygems'"
+    file.puts "gem 'errornot_notifier'"
     file.puts IO.read(shim_file)
     file.puts IO.read(RACK_FILE)
     file.puts "env = Rack::MockRequest.env_for(#{url.inspect})"

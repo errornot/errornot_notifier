@@ -1,10 +1,10 @@
 Feature: Rescue errors in Rails middleware
 
   Background:
-    Given I have built and installed the "hoptoad_notifier" gem
+    Given I have built and installed the "errornot_notifier" gem
     And I generate a new Rails application
     And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure my application to require the "errornot_notifier" gem
     And I run "script/generate hoptoad -k myapikey"
 
   Scenario: Rescue an exception in the dispatcher

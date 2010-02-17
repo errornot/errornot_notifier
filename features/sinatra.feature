@@ -1,7 +1,7 @@
 Feature: Use the notifier in a Sinatra app
 
   Background:
-    Given I have built and installed the "hoptoad_notifier" gem
+    Given I have built and installed the "errornot_notifier" gem
 
   Scenario: Rescue an exception in a Sinatra app
     Given the following Rack app:

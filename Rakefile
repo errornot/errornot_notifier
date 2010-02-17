@@ -57,7 +57,7 @@ gemspec = Gem::Specification.new do |s|
   s.add_development_dependency("nokogiri")
   s.add_development_dependency("shoulda")
 
-  s.authors = ["thoughtbot, inc"]
+  s.authors = ["thoughtbot, inc, Cyril Mougel"]
   s.email   = %q{support@hoptoadapp.com}
   s.homepage = "http://www.hoptoadapp.com"
 
