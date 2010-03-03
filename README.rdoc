@@ -65,7 +65,7 @@ Next add something like this at the bottom of your config/environment.rb:
 You will also need to copy the hoptoad_notifier_tasks.rake file into your
 RAILS_ROOT/lib/tasks directory in order for the rake hoptoad:test task to work:
 
-  cp vendor/gems/errornot_notifier-0.1.0/generators/hoptoad/templates/hoptoad_notifier_tasks.rake lib/tasks
+  cp vendor/gems/errornot_notifier-*/generators/hoptoad/templates/hoptoad_notifier_tasks.rake lib/tasks
 
 As always, if you choose not to vendor the errornot_notifier gem, make sure
 every server you deploy to has the gem installed or your application won't start.
