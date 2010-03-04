@@ -8,6 +8,7 @@ class SenderTest < Test::Unit::TestCase
 
   def build_sender(opts = {})
     config = ErrornotNotifier::Configuration.new
+    config.host = 'localhost'
     opts.each {|opt, value| config.send(:"#{opt}=", value) }
     ErrornotNotifier::Sender.new(config)
   end
@@ -15,7 +16,7 @@ class SenderTest < Test::Unit::TestCase
   def send_exception(args = {})
     notice = args.delete(:notice) || build_notice_data
     sender = args.delete(:sender) || build_sender(args)
-    sender.send_to_Errornot(notice)
+    sender.send_to_errornot(notice)
     sender
   end
 
@@ -99,13 +100,13 @@ class SenderTest < Test::Unit::TestCase
   should "connect to the right port for ssl" do
     stub_http
     send_exception(:secure => true)
-    assert_received(Net::HTTP, :new) {|expect| expect.with("hoptoadapp.com", 443) }
+    assert_received(Net::HTTP, :new) {|expect| expect.with("localhost", 443) }
   end
 
   should "connect to the right port for non-ssl" do
     stub_http
     send_exception(:secure => false)
-    assert_received(Net::HTTP, :new) {|expect| expect.with("hoptoadapp.com", 80) }
+    assert_received(Net::HTTP, :new) {|expect| expect.with("localhost", 80) }
   end
 
   should "use ssl if secure" do
