@@ -20,7 +20,7 @@ end
 When /^I configure my application to require the "([^\"]*)" gem$/ do |gem_name|
   if rails_manages_gems?
     run = "Rails::Initializer.run do |config|"
-    insert = "  config.gem '#{gem_name}', :lib => 'hoptoad_notifier'"
+    insert = "  config.gem '#{gem_name}'"
     content = File.read(environment_path)
     if content.sub!(run, "#{run}\n#{insert}")
       File.open(environment_path, 'wb') { |file| file.write(content) }
@@ -30,8 +30,8 @@ When /^I configure my application to require the "([^\"]*)" gem$/ do |gem_name|
   else
     File.open(environment_path, 'a') do |file|
       file.puts
-      file.puts("require 'hoptoad_notifier'")
-      file.puts("require 'hoptoad_notifier/rails'")
+      file.puts("require 'errornot_notifier'")
+      file.puts("require 'errornot_notifier/rails'")
     end
 
     unless rails_finds_generators_in_gems?
@@ -45,18 +45,18 @@ When /^I run "([^\"]*)"$/ do |command|
   @terminal.run(command)
 end
 
-Then /^I should receive a Hoptoad notification$/ do
+Then /^I should receive a Errornot notification$/ do
   Then %{I should see "[ErrorNot Logger] Success: Net::HTTPOK"}
 end
 
-Then /^I should receive two Hoptoad notifications$/ do
+Then /^I should receive two Errornot notifications$/ do
   @terminal.output.scan(/\[ErrorNot Logger\] Success: Net::HTTPOK/).size.should == 2
 end
 
-When /^I configure the Hoptoad shim$/ do
-  shim_file = File.join(PROJECT_ROOT, 'features', 'support', 'hoptoad_shim.rb.template')
+When /^I configure the Errornot shim$/ do
+  shim_file = File.join(PROJECT_ROOT, 'features', 'support', 'errornot_shim.rb.template')
   if rails_supports_initializers?
-    target = File.join(RAILS_ROOT, 'config', 'initializers', 'hoptoad_shim.rb')
+    target = File.join(RAILS_ROOT, 'config', 'initializers', 'errornot_shim.rb')
     FileUtils.cp(shim_file, target)
   else
     File.open(environment_path, 'a') do |file|
@@ -67,16 +67,16 @@ When /^I configure the Hoptoad shim$/ do
 end
 
 When /^I configure the notifier to use "([^\"]*)" as an API key$/ do |api_key|
-  config_file = File.join(RAILS_ROOT, 'config', 'initializers', 'hoptoad.rb')
+  config_file = File.join(RAILS_ROOT, 'config', 'initializers', 'errornot.rb')
   if rails_manages_gems?
     requires = ''
   else
-    requires = "require 'hoptoad_notifier'"
+    requires = "require 'errornot_notifier'"
   end
 
   initializer_code = <<-EOF
     #{requires}
-    HoptoadNotifier.configure do |config|
+    ErrornotNotifier.configure do |config|
       config.api_key = #{api_key.inspect}
     end
   EOF
@@ -169,7 +169,7 @@ When /^I perform a request to "([^\"]*)"$/ do |uri|
   @terminal.run("./script/runner -e production request.rb")
 end
 
-Then /^I should receive the following Hoptoad notification:$/ do |table|
+Then /^I should receive the following Errornot notification:$/ do |table|
   exceptions = @terminal.output.scan(%r{Recieved the following exception:\n([^\n]*)\n}m)
   exceptions.should_not be_empty
 

@@ -1,10 +1,10 @@
-require 'hoptoad_notifier'
+require 'errornot_notifier'
 
-namespace :hoptoad do
-  desc "Notify Hoptoad of a new deploy."
+namespace :errornot do
+  desc "Notify Errornot of a new deploy."
   task :deploy => :environment do
-    require 'hoptoad_tasks'
-    HoptoadTasks.deploy(:rails_env      => ENV['TO'], 
+    require 'errornot_tasks'
+    ErrornotTasks.deploy(:rails_env      => ENV['TO'],
                         :scm_revision   => ENV['REVISION'],
                         :scm_repository => ENV['REPO'],
                         :local_username => ENV['USER'],
@@ -16,24 +16,24 @@ namespace :hoptoad do
     RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
   end
 
-  desc "Verify your gem installation by sending a test exception to the hoptoad service"
-  task :test => ['hoptoad:log_stdout', :environment] do
+  desc "Verify your gem installation by sending a test exception to the errornot service"
+  task :test => ['errornot:log_stdout', :environment] do
     RAILS_DEFAULT_LOGGER.level = Logger::DEBUG
 
     require 'action_controller/test_process'
 
     Dir["app/controllers/application*.rb"].each { |file| require(file) }
 
-    class HoptoadTestingException < RuntimeError; end
+    class ErrornotTestingException < RuntimeError; end
 
-    unless HoptoadNotifier.configuration.api_key
-      puts "Hoptoad needs an API key configured! Check the README to see how to add it."
+    unless ErrornotNotifier.configuration.api_key
+      puts "Errornot needs an API key configured! Check the README to see how to add it."
       exit
     end
 
-    HoptoadNotifier.configuration.development_environments = []
+    ErrornotNotifier.configuration.development_environments = []
 
-    catcher = HoptoadNotifier::Rails::ActionControllerCatcher
+    catcher = ErrornotNotifier::Rails::ActionControllerCatcher
     in_controller = ApplicationController.included_modules.include?(catcher)
     in_base = ActionController::Base.included_modules.include?(catcher)
     if !in_controller || !in_base
@@ -42,7 +42,7 @@ namespace :hoptoad do
     end
 
     puts "Configuration:"
-    HoptoadNotifier.configuration.to_hash.each do |key, value|
+    ErrornotNotifier.configuration.to_hash.each do |key, value|
       puts sprintf("%25s: %s", key.to_s, value.inspect.slice(0, 55))
     end
 
@@ -54,10 +54,10 @@ namespace :hoptoad do
     puts 'Setting up the Controller.'
     class ApplicationController
       # This is to bypass any filters that may prevent access to the action.
-      prepend_before_filter :test_hoptoad
-      def test_hoptoad
+      prepend_before_filter :test_errornot
+      def test_errornot
         puts "Raising '#{exception_class.name}' to simulate application failure."
-        raise exception_class.new, 'Testing hoptoad via "rake hoptoad:test". If you can see this, it works.'
+        raise exception_class.new, 'Testing errornot via "rake errornot:test". If you can see this, it works.'
       end
 
       def rescue_action(exception)
@@ -76,7 +76,7 @@ namespace :hoptoad do
       end
 
       def exception_class
-        exception_name = ENV['EXCEPTION'] || "HoptoadTestingException"
+        exception_name = ENV['EXCEPTION'] || "ErrornotTestingException"
         Object.const_get(exception_name)
       rescue
         Object.const_set(exception_name, Class.new(Exception))
@@ -86,12 +86,12 @@ namespace :hoptoad do
         nil
       end
     end
-    class HoptoadVerificationController < ApplicationController; end
+    class ErrornotVerificationController < ApplicationController; end
 
     puts 'Processing request.'
     request = ActionController::TestRequest.new
     response = ActionController::TestResponse.new
-    HoptoadVerificationController.new.process(request, response)
+    ErrornotVerificationController.new.process(request, response)
   end
 end
 

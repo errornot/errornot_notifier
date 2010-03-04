@@ -2,15 +2,15 @@ require 'net/http'
 require 'net/https'
 require 'rubygems'
 require 'active_support'
-require 'hoptoad_notifier/version'
-require 'hoptoad_notifier/configuration'
-require 'hoptoad_notifier/notice'
-require 'hoptoad_notifier/sender'
-require 'hoptoad_notifier/backtrace'
-require 'hoptoad_notifier/rack'
+require 'errornot_notifier/version'
+require 'errornot_notifier/configuration'
+require 'errornot_notifier/notice'
+require 'errornot_notifier/sender'
+require 'errornot_notifier/backtrace'
+require 'errornot_notifier/rack'
 
-# Gem for applications to automatically post errors to the Hoptoad of their choice.
-module HoptoadNotifier
+# Gem for applications to automatically post errors to the Errornot of their choice.
+module ErrornotNotifier
 
   API_VERSION = "1.0"
   LOG_PREFIX = "** [ErrorNot Logger] "
@@ -21,12 +21,12 @@ module HoptoadNotifier
   }
 
   class << self
-    # The sender object is responsible for delivering formatted data to the Hoptoad server.
-    # Must respond to #send_to_hoptoad. See HoptoadNotifier::Sender.
+    # The sender object is responsible for delivering formatted data to the Errornot server.
+    # Must respond to #send_to_errornot. See ErrornotNotifier::Sender.
     attr_accessor :sender
 
-    # A Hoptoad configuration object. Must act like a hash and return sensible
-    # values for all Hoptoad configuration options. See HoptoadNotifier::Configuration.
+    # A Errornot configuration object. Must act like a hash and return sensible
+    # values for all Errornot configuration options. See ErrornotNotifier::Configuration.
     attr_accessor :configuration
 
     # Tell the log that the Notifier is good to go
@@ -39,9 +39,9 @@ module HoptoadNotifier
       write_verbose_log("Environment Info: #{environment_info}")
     end
 
-    # Prints out the response body from Hoptoad for debugging help
+    # Prints out the response body from Errornot for debugging help
     def report_response_body(response)
-      write_verbose_log("Response from Hoptoad: \n#{response}")
+      write_verbose_log("Response from Errornot: \n#{response}")
     end
 
     # Returns the Ruby version, Rails version, and current Rails environment
@@ -64,7 +64,7 @@ module HoptoadNotifier
     # Call this method to modify defaults in your initializers.
     #
     # @example
-    #   HoptoadNotifier.configure do |config|
+    #   ErrornotNotifier.configure do |config|
     #     config.api_key = '1234567890abcdef'
     #     config.secure  = false
     #   end
@@ -77,10 +77,10 @@ module HoptoadNotifier
 
     # Sends an exception manually using this method, even when you are not in a controller.
     #
-    # @param [Exception] exception The exception you want to notify Hoptoad about.
-    # @param [Hash] opts Data that will be sent to Hoptoad.
+    # @param [Exception] exception The exception you want to notify Errornot about.
+    # @param [Hash] opts Data that will be sent to Errornot.
     #
-    # @option opts [String] :api_key The API key for this project. The API key is a unique identifier that Hoptoad uses for identification.
+    # @option opts [String] :api_key The API key for this project. The API key is a unique identifier that Errornot uses for identification.
     # @option opts [String] :error_message The error returned by the exception (or the message you want to log).
     # @option opts [String] :backtrace A backtrace, usually obtained with +caller+.
     # @option opts [String] :request The controller's request object.
@@ -91,7 +91,7 @@ module HoptoadNotifier
     end
 
     # Sends the notice unless it is one of the default ignored exceptions
-    # @see HoptoadNotifier.notify
+    # @see ErrornotNotifier.notify
     def notify_or_ignore(exception, opts = {})
       notice = build_notice_for(exception, opts)
       send_notice(notice) unless notice.ignore?
@@ -118,7 +118,7 @@ module HoptoadNotifier
 
     def send_notice(notice)
       if configuration.public?
-        sender.send_to_hoptoad(notice.to_xml)
+        sender.send_to_errornot(notice.to_xml)
       end
     end
 

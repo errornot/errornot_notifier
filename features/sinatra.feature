@@ -7,14 +7,14 @@ Feature: Use the notifier in a Sinatra app
     Given the following Rack app:
       """
       require 'sinatra/base'
-      require 'hoptoad_notifier'
+      require 'errornot_notifier'
 
-      HoptoadNotifier.configure do |config|
+      ErrornotNotifier.configure do |config|
         config.api_key = 'my_api_key'
       end
 
       class FontaneApp < Sinatra::Default
-        use HoptoadNotifier::Rack
+        use ErrornotNotifier::Rack
         enable :raise_errors
 
         get "/test/index" do
@@ -25,7 +25,7 @@ Feature: Use the notifier in a Sinatra app
       app = FontaneApp
       """
     When I perform a Rack request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | error message | RuntimeError: Sinatra has left the building   |
       | error class   | RuntimeError                                  |
       | parameters    | param: value                                  |

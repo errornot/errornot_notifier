@@ -12,41 +12,39 @@ class ConfigurationTest < Test::Unit::TestCase
     assert_config_default :project_root,        nil
     assert_config_default :environment_name,    nil
     assert_config_default :logger,              nil
-    assert_config_default :notifier_version,    HoptoadNotifier::VERSION
-    assert_config_default :notifier_name,       'Hoptoad Notifier'
-    assert_config_default :notifier_url,        'http://hoptoadapp.com'
+    assert_config_default :notifier_version,    ErrornotNotifier::VERSION
+    assert_config_default :notifier_name,       'Errornot Notifier'
     assert_config_default :secure,              false
-    assert_config_default :host,                'hoptoadapp.com'
     assert_config_default :http_open_timeout,   2
     assert_config_default :http_read_timeout,   5
     assert_config_default :ignore_by_filters,   []
     assert_config_default :ignore_user_agent,   []
     assert_config_default :params_filters,
-                          HoptoadNotifier::Configuration::DEFAULT_PARAMS_FILTERS
+                          ErrornotNotifier::Configuration::DEFAULT_PARAMS_FILTERS
     assert_config_default :backtrace_filters,
-                          HoptoadNotifier::Configuration::DEFAULT_BACKTRACE_FILTERS
+                          ErrornotNotifier::Configuration::DEFAULT_BACKTRACE_FILTERS
     assert_config_default :ignore,
-                          HoptoadNotifier::Configuration::IGNORE_DEFAULT
+                          ErrornotNotifier::Configuration::IGNORE_DEFAULT
     assert_config_default :development_lookup, true
     assert_config_default :framework, 'Standalone'
   end
 
   should "provide default values for secure connections" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.secure = true
     assert_equal 443, config.port
     assert_equal 'https', config.protocol
   end
 
   should "provide default values for insecure connections" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.secure = false
     assert_equal 80, config.port
     assert_equal 'http', config.protocol
   end
 
   should "not cache inferred ports" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.secure = false
     config.port
     config.secure = true
@@ -77,7 +75,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   should "act like a hash" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     hash = config.to_hash
     [:api_key, :backtrace_filters, :development_environments,
      :environment_name, :host, :http_open_timeout,
@@ -90,7 +88,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   should "be mergable" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     hash = config.to_hash
     assert_equal hash.merge(:key => 'value'), config.merge(:key => 'value')
   end
@@ -100,7 +98,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   should "warn when attempting to read environment filters" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.
       expects(:warn).
       with(regexp_matches(/deprecated/i))
@@ -128,7 +126,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   should "allow ignored exceptions to be appended" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     original_filters = config.ignore.dup
     new_filter = 'hello'
     config.ignore << new_filter
@@ -144,48 +142,48 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   should "use development and test as development environments by default" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     assert_same_elements %w(development test cucumber), config.development_environments
   end
 
   should "be public in a public environment" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.development_environments = %w(development)
     config.environment_name = 'production'
     assert config.public?
   end
 
   should "not be public in a development environment" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.development_environments = %w(staging)
     config.environment_name = 'staging'
     assert !config.public?
   end
 
   should "be public without an environment name" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     assert config.public?
   end
 
   should "use the assigned logger if set" do
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.logger = "CUSTOM LOGGER"
     assert_equal "CUSTOM LOGGER", config.logger
   end
 
   def assert_config_default(option, default_value, config = nil)
-    config ||= HoptoadNotifier::Configuration.new
+    config ||= ErrornotNotifier::Configuration.new
     assert_equal default_value, config.send(option)
   end
 
   def assert_config_overridable(option, value = 'a value')
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     config.send(:"#{option}=", value)
     assert_equal value, config.send(option)
   end
 
   def assert_appends_value(option, &block)
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     original_values = config.send(option).dup
     block ||= lambda do |config|
       new_value = 'hello'
@@ -197,7 +195,7 @@ class ConfigurationTest < Test::Unit::TestCase
   end
 
   def assert_replaces(option, setter)
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     new_value = 'hello'
     config.send(setter, [new_value])
     assert_equal [new_value], config.send(option)

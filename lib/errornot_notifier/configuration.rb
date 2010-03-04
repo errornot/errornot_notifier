@@ -1,4 +1,4 @@
-module HoptoadNotifier
+module ErrornotNotifier
   # Used to set up and modify settings for the notifier.
   class Configuration
 
@@ -12,11 +12,11 @@ module HoptoadNotifier
     # The API key for your project, found on the project edit form.
     attr_accessor :api_key
 
-    # The host to connect to (defaults to hoptoadapp.com).
+    # The host to connect, there are no default value
     attr_accessor :host
 
-    # The port on which your Hoptoad server runs (defaults to 443 for secure
-    # connections, 80 for insecure connections).
+    # The port on which your Errornot server runs we can advise to
+    # prefere 443 for a secure connection
     attr_accessor :port
 
     # +true+ for https connections, +false+ for http connections.
@@ -40,7 +40,7 @@ module HoptoadNotifier
     # The password to use when logging into your proxy server (if using a proxy)
     attr_accessor :proxy_pass
 
-    # A list of parameters that should be filtered out of what is sent to Hoptoad.
+    # A list of parameters that should be filtered out of what is sent to Errornot.
     # By default, all "password" attributes will have their contents replaced.
     attr_reader :params_filters
 
@@ -68,7 +68,7 @@ module HoptoadNotifier
     # The path to the project in which the error occurred, such as the RAILS_ROOT
     attr_accessor :project_root
 
-    # The name of the notifier library being used to send notifications (such as "Hoptoad Notifier")
+    # The name of the notifier library being used to send notifications (such as "Errornot Notifier")
     attr_accessor :notifier_name
 
     # The version of the notifier library being used to send notifications (such as "1.0.2")
@@ -77,18 +77,18 @@ module HoptoadNotifier
     # The url of the notifier library being used to send notifications
     attr_accessor :notifier_url
 
-    # The logger used by HoptoadNotifier
+    # The logger used by ErrornotNotifier
     attr_accessor :logger
 
-    # The framework HoptoadNotifier is configured to use
+    # The framework ErrornotNotifier is configured to use
     attr_accessor :framework
 
     DEFAULT_PARAMS_FILTERS = %w(password password_confirmation).freeze
 
     DEFAULT_BACKTRACE_FILTERS = [
       lambda { |line|
-        if defined?(HoptoadNotifier.configuration.project_root) && HoptoadNotifier.configuration.project_root.to_s != '' 
-          line.gsub(/#{HoptoadNotifier.configuration.project_root}/, "[PROJECT_ROOT]")
+        if defined?(ErrornotNotifier.configuration.project_root) && ErrornotNotifier.configuration.project_root.to_s != ''
+          line.gsub(/#{ErrornotNotifier.configuration.project_root}/, "[PROJECT_ROOT]")
         else
           line
         end
@@ -101,7 +101,7 @@ module HoptoadNotifier
           end
         end
       },
-      lambda { |line| line if line !~ %r{lib/hoptoad_notifier} }
+      lambda { |line| line if line !~ %r{lib/errornot_notifier} }
     ].freeze
 
     IGNORE_DEFAULT = ['ActiveRecord::RecordNotFound',
@@ -114,7 +114,6 @@ module HoptoadNotifier
 
     def initialize
       @secure                   = false
-      @host                     = 'hoptoadapp.com'
       @http_open_timeout        = 2
       @http_read_timeout        = 5
       @params_filters           = DEFAULT_PARAMS_FILTERS.dup
@@ -124,9 +123,8 @@ module HoptoadNotifier
       @ignore_user_agent        = []
       @development_environments = %w(development test cucumber)
       @development_lookup       = true
-      @notifier_name            = 'Hoptoad Notifier'
+      @notifier_name            = 'Errornot Notifier'
       @notifier_version         = VERSION
-      @notifier_url             = 'http://hoptoadapp.com'
       @framework                = 'Standalone'
     end
 
@@ -153,8 +151,8 @@ module HoptoadNotifier
     #   end
     #
     # @param [Proc] block The new ignore filter
-    # @yieldparam [Hash] data The exception data given to +HoptoadNotifier.notify+
-    # @yieldreturn [Boolean] If the block returns true the exception will be ignored, otherwise it will be processed by hoptoad.
+    # @yieldparam [Hash] data The exception data given to +ErrornotNotifier.notify+
+    # @yieldreturn [Boolean] If the block returns true the exception will be ignored, otherwise it will be processed by Errornot.
     def ignore_by_filter(&block)
       self.ignore_by_filters << block
     end

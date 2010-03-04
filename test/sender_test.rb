@@ -7,15 +7,15 @@ class SenderTest < Test::Unit::TestCase
   end
 
   def build_sender(opts = {})
-    config = HoptoadNotifier::Configuration.new
+    config = ErrornotNotifier::Configuration.new
     opts.each {|opt, value| config.send(:"#{opt}=", value) }
-    HoptoadNotifier::Sender.new(config)
+    ErrornotNotifier::Sender.new(config)
   end
 
   def send_exception(args = {})
     notice = args.delete(:notice) || build_notice_data
     sender = args.delete(:sender) || build_sender(args)
-    sender.send_to_hoptoad(notice)
+    sender.send_to_Errornot(notice)
     sender
   end
 
@@ -29,7 +29,7 @@ class SenderTest < Test::Unit::TestCase
     http
   end
 
-  should "post to Hoptoad when using an HTTP proxy" do
+  should "post to Errornot when using an HTTP proxy" do
     response = stub(:body => 'body')
     http     = stub(:post          => response,
                     :read_timeout= => nil,
@@ -38,7 +38,7 @@ class SenderTest < Test::Unit::TestCase
     proxy    = stub(:new => http)
     Net::HTTP.stubs(:Proxy => proxy)
 
-    url = "http://hoptoadapp.com:80#{HoptoadNotifier::Sender::NOTICES_URI}"
+    url = "http://hoptoadapp.com:80#{ErrornotNotifier::Sender::NOTICES_URI}"
     uri = URI.parse(url)
 
     proxy_host = 'some.host'
@@ -50,8 +50,8 @@ class SenderTest < Test::Unit::TestCase
                    :proxy_port => proxy_port,
                    :proxy_user => proxy_user,
                    :proxy_pass => proxy_pass)
-    assert_received(http, :post) do |expect| 
-      expect.with(uri.path, anything, HoptoadNotifier::HEADERS)
+    assert_received(http, :post) do |expect|
+      expect.with(uri.path, anything, ErrornotNotifier::HEADERS)
     end
     assert_received(Net::HTTP, :Proxy) do |expect|
       expect.with(proxy_host, proxy_port, proxy_user, proxy_pass)
@@ -60,16 +60,16 @@ class SenderTest < Test::Unit::TestCase
 
   should "post to the right url for non-ssl" do
     http = stub_http
-    url = "http://hoptoadapp.com:80#{HoptoadNotifier::Sender::NOTICES_URI}"
+    url = "http://hoptoadapp.com:80#{ErrornotNotifier::Sender::NOTICES_URI}"
     uri = URI.parse(url)
     send_exception(:secure => false)
-    assert_received(http, :post) {|expect| expect.with(uri.path, anything, HoptoadNotifier::HEADERS) }
+    assert_received(http, :post) {|expect| expect.with(uri.path, anything, ErrornotNotifier::HEADERS) }
   end
 
   should "post to the right path for ssl" do
     http = stub_http
     send_exception(:secure => true)
-    assert_received(http, :post) {|expect| expect.with(HoptoadNotifier::Sender::NOTICES_URI, anything, HoptoadNotifier::HEADERS) }
+    assert_received(http, :post) {|expect| expect.with(ErrornotNotifier::Sender::NOTICES_URI, anything, ErrornotNotifier::HEADERS) }
   end
 
   should "default the open timeout to 2 seconds" do

@@ -19,7 +19,7 @@ require 'active_support'
 require 'nokogiri'
 require 'rack'
 
-require "hoptoad_notifier"
+require "errornot_notifier"
 
 begin require 'redgreen'; rescue LoadError; end
 
@@ -29,7 +29,7 @@ module TestMethods
   end
 
   def do_raise
-    raise "Hoptoad"
+    raise "Errornot"
   end
 
   def do_not_raise
@@ -45,17 +45,17 @@ module TestMethods
   end
 
   def manual_notify
-    notify_hoptoad(Exception.new)
+    notify_errornot(Exception.new)
     render :text => "Success"
   end
 
   def manual_notify_ignored
-    notify_hoptoad(ActiveRecord::RecordNotFound.new("404"))
+    notify_errornot(ActiveRecord::RecordNotFound.new("404"))
     render :text => "Success"
   end
 end
 
-class HoptoadController < ActionController::Base
+class ErrornotController < ActionController::Base
   include TestMethods
 end
 
@@ -96,11 +96,11 @@ class Test::Unit::TestCase
   end
 
   def stub_sender
-    stub('sender', :send_to_hoptoad => nil)
+    stub('sender', :send_to_errornot => nil)
   end
 
   def stub_sender!
-    HoptoadNotifier.sender = stub_sender
+    ErrornotNotifier.sender = stub_sender
   end
 
   def stub_notice
@@ -109,23 +109,23 @@ class Test::Unit::TestCase
 
   def stub_notice!
     returning stub_notice do |notice|
-      HoptoadNotifier::Notice.stubs(:new => notice)
+      ErrornotNotifier::Notice.stubs(:new => notice)
     end
   end
 
   def create_dummy
-    HoptoadNotifier::DummySender.new
+    ErrornotNotifier::DummySender.new
   end
 
   def reset_config
-    HoptoadNotifier.configuration = nil
-    HoptoadNotifier.configure do |config|
+    ErrornotNotifier.configuration = nil
+    ErrornotNotifier.configure do |config|
       config.api_key = 'abc123'
     end
   end
 
   def clear_backtrace_filters
-    HoptoadNotifier.configuration.backtrace_filters.clear
+    ErrornotNotifier.configuration.backtrace_filters.clear
   end
 
   def build_exception
@@ -155,11 +155,11 @@ class Test::Unit::TestCase
   end
 
   def assert_caught_and_sent
-    assert !HoptoadNotifier.sender.collected.empty?
+    assert !ErrornotNotifier.sender.collected.empty?
   end
 
   def assert_caught_and_not_sent
-    assert HoptoadNotifier.sender.collected.empty?
+    assert ErrornotNotifier.sender.collected.empty?
   end
 
   def assert_array_starts_with(expected, actual)
@@ -217,7 +217,7 @@ class CollectingSender
     @collected = []
   end
 
-  def send_to_hoptoad(data)
+  def send_to_errornot(data)
     @collected << data
   end
 end

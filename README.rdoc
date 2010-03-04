@@ -21,14 +21,14 @@ Remove the vendor/plugins/exception_notifier directory.
 
 Add the errornot_notifier gem to your app. In config/environment.rb:
 
-  config.gem 'errornot_notifier', :lib => 'hoptoad_notifier'
+  config.gem 'errornot_notifier'
 
 Then from your project's RAILS_ROOT, run:
 
   rake gems:install
-  script/generate hoptoad --api-key your_key_here --server your_host
+  script/generate errornot --api-key your_key_here --server your_host
 
-Once installed, you should vendor the hoptoad_notifier gem.
+Once installed, you should vendor the errornot_notifier gem.
 
   rake gems:unpack GEM=errornot_notifier
 
@@ -41,7 +41,7 @@ Install the errornot_notifier gem:
 
   gem install errornot_notifier
 
-Once installed, you should vendor the hoptoad_notifier gem:
+Once installed, you should vendor the errornot_notifier gem:
 
   mkdir vendor/gems
   cd vendor/gems
@@ -55,17 +55,17 @@ block in environment.rb so that the vendored gem is loaded.
 
 Next add something like this at the bottom of your config/environment.rb:
 
-  require 'hoptoad_notifier'
-  require 'hoptoad_notifier/rails'
-  HoptoadNotifier.configure do |config|
+  require 'errornot_notifier'
+  require 'errornot_notifier/rails'
+  ErrornotNotifier.configure do |config|
     config.api_key = 'your_key_here'
     config.host = 'host_of_your_errornot_instance'
   end
 
-You will also need to copy the hoptoad_notifier_tasks.rake file into your
-RAILS_ROOT/lib/tasks directory in order for the rake hoptoad:test task to work:
+You will also need to copy the errornot_notifier_tasks.rake file into your
+RAILS_ROOT/lib/tasks directory in order for the rake errornot:test task to work:
 
-  cp vendor/gems/errornot_notifier-*/generators/hoptoad/templates/hoptoad_notifier_tasks.rake lib/tasks
+  cp vendor/gems/errornot_notifier-*/generators/errornot/templates/errornot_notifier_tasks.rake lib/tasks
 
 As always, if you choose not to vendor the errornot_notifier gem, make sure
 every server you deploy to has the gem installed or your application won't start.
@@ -75,27 +75,27 @@ every server you deploy to has the gem installed or your application won't start
 You can test that ErrorNot is working in your production environment by using
 this rake task (from RAILS_ROOT):
 
-  rake hoptoad:test
+  rake errornot:test
 
-If everything is configured properly, that task will send a notice to Hoptoad
+If everything is configured properly, that task will send a notice to Errornot
 which will be visible immediately.
 
 == Rack
 
-In order to use hoptoad_notifier in a non-Rails rack app, just load the
-hoptoad_notifier, configure your API key, and use the HoptoadNotifier::Rack
+In order to use errornot_notifier in a non-Rails rack app, just load the
+errornot_notifier, configure your API key, and use the ErrornotNotifier::Rack
 middleware:
 
   require 'rack'
-  require 'hoptoad_notifier'
+  require 'errornot_notifier'
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key = 'my_api_key'
     config.host = 'host_of_your_errornot_instance'
   end
 
   app = Rack::Builder.app do
-    use HoptoadNotifier::Rack
+    use errornotNotifier::Rack
     run lambda { |env| raise "Rack down" }
   end
 
@@ -105,15 +105,15 @@ Using errornot_notifier in a Sinatra app is just like a Rack app, but you have
 to disable Sinatra's error rescuing functionality:
 
   require 'sinatra/base'
-  require 'hoptoad_notifier'
+  require 'errornot_notifier'
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key = 'my_api_key'
     config.host =' host_of_your_errornot_instance'
   end
 
   class MyApp < Sinatra::Default
-    use HoptoadNotifier::Rack
+    use ErrornotNotifier::Rack
     enable :raise_errors
 
     get "/" do
@@ -132,36 +132,36 @@ controller, you can do something like this:
 
   ...
   rescue => ex
-    notify_hoptoad(ex)
+    notify_errornot(ex)
     flash[:failure] = 'Encryptions could not be rerouted, try again.'
   end
   ...
 
-The #notify_hoptoad call will send the notice over to Hoptoad for later
-analysis. While in your controllers you use the notify_hoptoad method, anywhere
-else in your code, use HoptoadNotifier.notify.
+The #notify_errornot call will send the notice over to Errornot for later
+analysis. While in your controllers you use the notify_errornot method, anywhere
+else in your code, use ErrornotNotifier.notify.
 
-To perform custom error processing after Hoptoad has been notified, define the
-instance method #rescue_action_in_public_without_hoptoad(exception) in your
+To perform custom error processing after Errornot has been notified, define the
+instance method #rescue_action_in_public_without_errornot(exception) in your
 controller.
 
-== Tracking deployments in Hoptoad ( It's not implement in ErrorNot )
+== Tracking deployments in Errornot ( It's not implement in ErrorNot )
 
-Paying Hoptoad plans support the ability to track deployments of your application in Hoptoad.
-By notifying Hoptoad of your application deployments, all errors are resolved when a deploy occurs,
+Paying Errornot plans support the ability to track deployments of your application in Errornot.
+By notifying Errornot of your application deployments, all errors are resolved when a deploy occurs,
 so that you'll be notified again about any errors that reoccur after a deployment.
 
-Additionally, it's possible to review the errors in Hoptoad that occurred before and after a deploy.
+Additionally, it's possible to review the errors in Errornot that occurred before and after a deploy.
 
-When Hoptoad is installed as a gem, you need to add
+When Errornot is installed as a gem, you need to add
 
-  require 'hoptoad_notifier/capistrano'
+  require 'errornot_notifier/capistrano'
 
 to your deploy.rb
 
 == Going beyond exceptions
 
-You can also pass a hash to notify_hoptoad method and store whatever you want,
+You can also pass a hash to notify_errornot method and store whatever you want,
 not just an exception. And you can also use it anywhere, not just in
 controllers:
 
@@ -171,25 +171,25 @@ controllers:
     }
     my_unpredicable_method(params)
   rescue => e
-    HoptoadNotifier.notify(
+    ErrornotNotifier.notify(
       :error_class   => "Special Error",
       :error_message => "Special Error: #{e.message}",
       :parameters    => params
     )
   end
 
-While in your controllers you use the notify_hoptoad method, anywhere else in
-your code, use HoptoadNotifier.notify. Hoptoad will get all the information
+While in your controllers you use the notify_errornot method, anywhere else in
+your code, use ErrornotNotifier.notify. Errornot will get all the information
 about the error itself. As for a hash, these are the keys you should pass:
 
-* :error_class - Use this to group similar errors together. When Hoptoad catches an exception it sends the class name of that exception object.
+* :error_class - Use this to group similar errors together. When Errornot catches an exception it sends the class name of that exception object.
 * :error_message - This is the title of the error you see in the errors list. For exceptions it is "#{exception.class.name}: #{exception.message}"
-* :parameters - While there are several ways to send additional data to Hoptoad, passing a Hash as :parameters as in the example above is the most common use case. When Hoptoad catches an exception in a controller, the actual HTTP client request parameters are sent using this key.
+* :parameters - While there are several ways to send additional data to Errornot, passing a Hash as :parameters as in the example above is the most common use case. When Errornot catches an exception in a controller, the actual HTTP client request parameters are sent using this key.
 
-Hoptoad merges the hash you pass with these default options:
+Errornot merges the hash you pass with these default options:
 
   {
-    :api_key       => HoptoadNotifier.api_key,
+    :api_key       => ErrornotNotifier.api_key,
     :error_message => 'Notification',
     :backtrace     => caller,
     :parameters    => {},
@@ -200,14 +200,14 @@ You can override any of those parameters.
 
 == Filtering
 
-You can specify a whitelist of errors, that Hoptoad will not report on.  Use
+You can specify a whitelist of errors, that Errornot will not report on.  Use
 this feature when you are so apathetic to certain errors that you don't want
 them even logged.
 
 This filter will only be applied to automatic notifications, not manual
 notifications (when #notify is called directly).
 
-Hoptoad ignores the following exceptions by default:
+Errornot ignores the following exceptions by default:
 
   ActiveRecord::RecordNotFound
   ActionController::RoutingError
@@ -215,10 +215,10 @@ Hoptoad ignores the following exceptions by default:
   ActionController::UnknownAction
   CGI::Session::CookieStore::TamperedWithCookie
 
-To ignore errors in addition to those, specify their names in your Hoptoad
+To ignore errors in addition to those, specify their names in your Errornot
 configuration block.
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key      = '1234567890abcdef'
     config.ignore       << ActiveRecord::IgnoreThisError
   end
@@ -226,7 +226,7 @@ configuration block.
 To ignore *only* certain errors (and override the defaults), use the
 #ignore_only attribute.
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key      = '1234567890abcdef'
     config.ignore_only  = [ActiveRecord::IgnoreThisError]
   end
@@ -234,7 +234,7 @@ To ignore *only* certain errors (and override the defaults), use the
 To ignore certain user agents, add in the #ignore_user_agent attribute as a
 string or regexp:
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key      = '1234567890abcdef'
     config.ignore_user_agent  << /Ignored/
     config.ignore_user_agent << 'IgnoredUserAgent'
@@ -242,31 +242,31 @@ string or regexp:
 
 To ignore exceptions based on other conditions, use #ignore_by_filter:
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key      = '1234567890abcdef'
     config.ignore_by_filter do |exception_data|
       true if exception_data[:error_class] == "RuntimeError"
     end
   end
 
-To replace sensitive information sent to the Hoptoad service with [FILTERED] use #params_filters:
+To replace sensitive information sent to the Errornot service with [FILTERED] use #params_filters:
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.api_key      = '1234567890abcdef'
     config.params_filters << "credit_card_number"
   end
 
 Note that, when rescuing exceptions within an ActionController method,
-hoptoad_notifier will reuse filters specified by #filter_params_logging.
+errornot_notifier will reuse filters specified by #filter_params_logging.
 
 == Testing
 
-When you run your tests, you might notice that the Hoptoad service is recording
+When you run your tests, you might notice that the Errornot service is recording
 notices generated using #notify when you don't expect it to.  You can
 use code like this in your test_helper.rb to redefine that method so those
 errors are not reported while running tests.
 
-  module HoptoadNotifier
+  module ErrornotNotifier
     def self.notify(thing)
       # do nothing.
     end
@@ -274,9 +274,9 @@ errors are not reported while running tests.
 
 == Proxy Support
 
-The notifier supports using a proxy, if your server is not able to directly reach the Hoptoad servers.  To configure the proxy settings, added the following information to your Hoptoad configuration block.
+The notifier supports using a proxy, if your server is not able to directly reach the Errornot servers.  To configure the proxy settings, added the following information to your Errornot configuration block.
 
-  HoptoadNotifier.configure do |config|
+ErrornotNotifier.configure do |config|
     config.proxy_host = ...
     config.proxy_port = ...
     config.proxy_user = ...
@@ -287,7 +287,7 @@ The notifier supports using a proxy, if your server is not able to directly reac
 See SUPPORTED_RAILS_VERSIONS for a list of official supported versions of
 Rails.
 
-Please open up a support ticket on Tender ( http://help.hoptoadapp.com ) if
+Please open up a support ticket on Tender ( http://help.Errornotapp.com ) if
 you're using a version of Rails that is not listed above and the notifier is
 not working properly.
 

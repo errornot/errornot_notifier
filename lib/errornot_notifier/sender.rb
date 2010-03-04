@@ -1,5 +1,5 @@
-module HoptoadNotifier
-  # Sends out the notice to Hoptoad
+module ErrornotNotifier
+  # Sends out the notice to Errornot
   class Sender
 
     NOTICES_URI = '/errors'.freeze
@@ -30,10 +30,10 @@ module HoptoadNotifier
     end
 
 
-    # Sends the notice data off to Hoptoad for processing.
+    # Sends the notice data off to Errornot for processing.
     #
     # @param [String] data The XML notice to be sent off
-    def send_to_hoptoad(data)
+    def send_to_errornot(data)
       logger.debug { "Sending request to #{url.to_s}:\n#{data}" } if logger
 
       http =
@@ -50,7 +50,7 @@ module HoptoadNotifier
                    data = process_payload(data)
                    http.post(url.path, data, HEADERS)
                  rescue TimeoutError => e
-                   log :error, "Timeout while contacting the Hoptoad server."
+                   log :error, "Timeout while contacting the Errornot server."
                    nil
                  end
 
@@ -73,12 +73,12 @@ module HoptoadNotifier
 
     def log(level, message, response = nil)
       logger.send level, LOG_PREFIX + message if logger
-      HoptoadNotifier.report_environment_info
-      HoptoadNotifier.report_response_body(response.body) if response && response.respond_to?(:body)
+      ErrornotNotifier.report_environment_info
+      ErrornotNotifier.report_response_body(response.body) if response && response.respond_to?(:body)
     end
 
     def logger
-      HoptoadNotifier.logger
+      ErrornotNotifier.logger
     end
 
   end

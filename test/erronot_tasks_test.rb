@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/helper'
 require 'rubygems'
 
-require File.dirname(__FILE__) + '/../lib/hoptoad_tasks'
+require File.dirname(__FILE__) + '/../lib/errornot_tasks'
 require 'fakeweb'
 
 FakeWeb.allow_net_connect = false
 
-class HoptoadTasksTest < Test::Unit::TestCase
+class ErrornotTasksTest < Test::Unit::TestCase
   def successful_response(body = "")
     response = Net::HTTPSuccess.new('1.2', '200', 'OK')
     response.stubs(:body).returns(body)
@@ -20,16 +20,16 @@ class HoptoadTasksTest < Test::Unit::TestCase
   end
 
   context "being quiet" do
-    setup { HoptoadTasks.stubs(:puts) }
+    setup { ErrornotTasks.stubs(:puts) }
 
     context "in a configured project" do
-      setup { HoptoadNotifier.configure { |config| config.api_key = "1234123412341234" } }
+      setup { ErrornotNotifier.configure { |config| config.api_key = "1234123412341234" } }
 
       context "on deploy({})" do
-        setup { @output = HoptoadTasks.deploy({}) }
+        setup { @output = ErrornotTasks.deploy({}) }
 
         before_should "complain about missing rails env" do
-          HoptoadTasks.expects(:puts).with(regexp_matches(/rails environment/i))
+          ErrornotTasks.expects(:puts).with(regexp_matches(/rails environment/i))
         end
 
         should "return false" do
@@ -41,10 +41,10 @@ class HoptoadTasksTest < Test::Unit::TestCase
         setup { @options = {:rails_env => "staging"} }
 
         context "on deploy(options)" do
-          setup { @output = HoptoadTasks.deploy(@options) }
+          setup { @output = ErrornotTasks.deploy(@options) }
 
-          before_should "post to http://hoptoadapp.com/deploys.txt" do
-            URI.stubs(:parse).with('http://hoptoadapp.com/deploys.txt').returns(:uri)
+          before_should "post to http://errornotapp.com/deploys.txt" do
+            URI.stubs(:parse).with('http://errornotapp.com/deploys.txt').returns(:uri)
             Net::HTTP.expects(:post_form).with(:uri, kind_of(Hash)).returns(successful_response)
           end
 
@@ -77,12 +77,12 @@ class HoptoadTasksTest < Test::Unit::TestCase
           end
 
           before_should "puts the response body on success" do
-            HoptoadTasks.expects(:puts).with("body")
+            ErrornotTasks.expects(:puts).with("body")
             Net::HTTP.expects(:post_form).with(any_parameters).returns(successful_response('body'))
           end
 
           before_should "puts the response body on failure" do
-            HoptoadTasks.expects(:puts).with("body")
+            ErrornotTasks.expects(:puts).with("body")
             Net::HTTP.expects(:post_form).with(any_parameters).returns(unsuccessful_response('body'))
           end
 
@@ -103,14 +103,14 @@ class HoptoadTasksTest < Test::Unit::TestCase
 
     context "in a configured project with custom host" do
       setup do
-        HoptoadNotifier.configure do |config| 
+        ErrornotNotifier.configure do |config|
           config.api_key = "1234123412341234"
           config.host = "custom.host"
         end
       end
 
       context "on deploy(:rails_env => 'staging')" do
-        setup { @output = HoptoadTasks.deploy(:rails_env => "staging") }
+        setup { @output = ErrornotTasks.deploy(:rails_env => "staging") }
 
         before_should "post to the custom host" do
           URI.stubs(:parse).with('http://custom.host/deploys.txt').returns(:uri)
@@ -120,13 +120,13 @@ class HoptoadTasksTest < Test::Unit::TestCase
     end
 
     context "when not configured" do
-      setup { HoptoadNotifier.configure { |config| config.api_key = "" } }
+      setup { ErrornotNotifier.configure { |config| config.api_key = "" } }
 
       context "on deploy(:rails_env => 'staging')" do
-        setup { @output = HoptoadTasks.deploy(:rails_env => "staging") }
+        setup { @output = ErrornotTasks.deploy(:rails_env => "staging") }
 
         before_should "complain about missing api key" do
-          HoptoadTasks.expects(:puts).with(regexp_matches(/api key/i))
+          ErrornotTasks.expects(:puts).with(regexp_matches(/api key/i))
         end
 
         should "return false" do

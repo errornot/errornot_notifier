@@ -1,4 +1,4 @@
-module HoptoadNotifier
+module ErrornotNotifier
   # Front end to parsing the backtrace for each notice
   class Backtrace
 

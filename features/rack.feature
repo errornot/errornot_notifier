@@ -7,19 +7,19 @@ Feature: Use the notifier in a plain Rack app
     Given the following Rack app:
       """
       require 'rack'
-      require 'hoptoad_notifier'
+      require 'errornot_notifier'
 
-      HoptoadNotifier.configure do |config|
+      ErrornotNotifier.configure do |config|
         config.api_key = 'my_api_key'
       end
 
       app = Rack::Builder.app do
-        use HoptoadNotifier::Rack
+        use ErrornotNotifier::Rack
         run lambda { |env| raise "Rack down" }
       end
       """
     When I perform a Rack request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | error message | RuntimeError: Rack down                       |
       | error class   | RuntimeError                                  |
       | parameters    | param: value                                  |

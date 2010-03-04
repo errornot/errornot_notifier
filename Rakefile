@@ -7,7 +7,7 @@ require 'cucumber/rake/task'
 desc 'Default: run unit tests.'
 task :default => [:test, :cucumber]
 
-desc 'Test the hoptoad_notifier gem.'
+desc 'Test the errornot_notifier gem.'
 Rake::TestTask.new(:test) do |t|
   t.libs << 'lib'
   t.pattern = 'test/**/*_test.rb'
@@ -26,7 +26,7 @@ namespace :changeling do
   desc "Bumps the version by a minor or patch version, depending on what was passed in."
   task :bump, :part do |t, args|
     # Thanks, Jeweler!
-    if HoptoadNotifier::VERSION  =~ /^(\d+)\.(\d+)\.(\d+)(?:\.(.*?))?$/
+    if ErrornotNotifier::VERSION  =~ /^(\d+)\.(\d+)\.(\d+)(?:\.(.*?))?$/
       major = $1.to_i
       minor = $2.to_i
       patch = $3.to_i
@@ -47,9 +47,9 @@ namespace :changeling do
 
     version = [major, minor, patch, build].compact.join('.')
 
-    File.open(File.join("lib", "hoptoad_notifier", "version.rb"), "w") do |f|
+    File.open(File.join("lib", "errornot_notifier", "version.rb"), "w") do |f|
       f.write <<EOF
-module HoptoadNotifier
+module ErrornotNotifier
   VERSION = "#{version}".freeze
 end
 EOF
@@ -58,10 +58,10 @@ EOF
 
   desc "Writes out the new CHANGELOG and prepares the release"
   task :change do
-    load 'lib/hoptoad_notifier/version.rb'
+    load 'lib/errornot_notifier/version.rb'
     file    = "CHANGELOG"
     old     = File.read(file)
-    version = HoptoadNotifier::VERSION
+    version = ErrornotNotifier::VERSION
     message = "Bumping to version #{version}"
 
     File.open(file, "w") do |f|
@@ -108,13 +108,13 @@ rescue LoadError
 end
 
 GEM_ROOT     = File.dirname(__FILE__).freeze
-VERSION_FILE = File.join(GEM_ROOT, 'lib', 'hoptoad_notifier', 'version')
+VERSION_FILE = File.join(GEM_ROOT, 'lib', 'errornot_notifier', 'version')
 
 require VERSION_FILE
 
 gemspec = Gem::Specification.new do |s|
   s.name        = %q{errornot_notifier}
-  s.version     = HoptoadNotifier::VERSION
+  s.version     = ErrornotNotifier::VERSION
   s.summary     = %q{Send your application errors to a hosted service and reclaim your inbox.}
 
   s.files        = FileList['[A-Z]*', 'generators/**/*.*', 'lib/**/*.rb',
@@ -135,8 +135,8 @@ gemspec = Gem::Specification.new do |s|
   s.add_development_dependency("shoulda")
 
   s.authors = ["thoughtbot, inc, Cyril Mougel"]
-  s.email   = %q{support@hoptoadapp.com}
-  s.homepage = "http://www.hoptoadapp.com"
+  s.email   = %q{cyril.mougel@gmail.com}
+  s.homepage = "http://github.com/shingara/errornot_notifier"
 
   s.platform = Gem::Platform::RUBY
 end

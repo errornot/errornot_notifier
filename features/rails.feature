@@ -5,77 +5,77 @@ Feature: Install the Gem in a Rails application
 
   Scenario: Use the gem without vendoring the gem in a Rails application
     When I generate a new Rails application
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
-    Then I should receive a Hoptoad notification
+    And I run "script/generate errornot -k myapikey"
+    Then I should receive a Errornot notification
     And I should see the Rails version
 
   Scenario: vendor the gem and uninstall
     When I generate a new Rails application
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
+    And I run "script/generate errornot -k myapikey"
     And I uninstall the "errornot_notifier" gem
-    And I run "rake hoptoad:test"
-    Then I should receive two Hoptoad notifications
+    And I run "rake errornot:test"
+    Then I should receive two Errornot notifications
 
   Scenario: Configure the notifier by hand
     When I generate a new Rails application
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure the notifier to use "myapikey" as an API key
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad"
-    Then I should receive a Hoptoad notification
+    And I run "script/generate errornot"
+    Then I should receive a Errornot notification
 
   Scenario: Try to install without an api key
     When I generate a new Rails application
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad"
-    Then I should see "Must pass --api-key or create config/initializers/hoptoad.rb"
+    And I run "script/generate errornot"
+    Then I should see "Must pass --api-key or create config/initializers/errornot.rb"
 
   Scenario: Configure and deploy using only installed gem
     When I generate a new Rails application
     And I run "capify ."
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
+    And I run "script/generate errornot -k myapikey"
     And I run "cap -T"
-    Then I should see "deploy:notify_hoptoad"
+    Then I should see "deploy:notify_errornot"
 
   Scenario: Configure and deploy using only vendored gem
     When I generate a new Rails application
     And I run "capify ."
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
+    And I run "script/generate errornot -k myapikey"
     And I uninstall the "errornot_notifier" gem
     And I run "cap -T"
-    Then I should see "deploy:notify_hoptoad"
+    Then I should see "deploy:notify_errornot"
 
   Scenario: Try to install when the errornot_notifier plugin still exists
     When I generate a new Rails application
     And I install the "errornot_notifier" plugin
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure the notifier to use "myapikey" as an API key
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad"
+    And I run "script/generate errornot"
     Then I should see "You must first remove the errornot_notifier plugin. Please run: script/plugin remove errornot_notifier"
 
   Scenario: Rescue an exception in a controller
     When I generate a new Rails application
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
+    And I run "script/generate errornot -k myapikey"
     And I define a response for "TestController#index":
       """
       session[:value] = "test"
       raise RuntimeError, "some message"
       """
     And I perform a request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | component     | test                                          |
       | action        | index                                         |
       | error message | RuntimeError: some message                    |

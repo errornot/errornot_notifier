@@ -1,22 +1,22 @@
-module HoptoadNotifier
+module ErrornotNotifier
   # Middleware for Rack applications. Any errors raised by the upstream
-  # application will be delivered to Hoptoad and re-raised.
+  # application will be delivered to Errornot and re-raised.
   #
   # Synopsis:
   #
   #   require 'rack'
-  #   require 'hoptoad_notifier'
+  #   require 'errornot_notifier'
   #
-  #   HoptoadNotifier.configure do |config|
+  #   ErrornotNotifier.configure do |config|
   #     config.api_key = 'my_api_key'
   #   end
   #
   #   app = Rack::Builder.app do
-  #     use HoptoadNotifier::Rack
+  #     use ErrornotNotifier::Rack
   #     run lambda { |env| raise "Rack down" }
   #   end
   #
-  # Use a standard HoptoadNotifier.configure call to configure your api key.
+  # Use a standard ErrornotNotifier.configure call to configure your api key.
   class Rack
     def initialize(app)
       @app = app
@@ -26,12 +26,12 @@ module HoptoadNotifier
       begin
         response = @app.call(env)
       rescue Exception => raised
-        HoptoadNotifier.notify_or_ignore(raised, :rack_env => env)
+        ErrornotNotifier.notify_or_ignore(raised, :rack_env => env)
         raise
       end
 
       if env['rack.exception']
-        HoptoadNotifier.notify_or_ignore(env['rack.exception'], :rack_env => env)
+        ErrornotNotifier.notify_or_ignore(env['rack.exception'], :rack_env => env)
       end
 
       response

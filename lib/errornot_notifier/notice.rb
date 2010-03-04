@@ -1,4 +1,4 @@
-module HoptoadNotifier
+module ErrornotNotifier
   class Notice
 
     # The exception that caused this notice, if any
@@ -54,7 +54,7 @@ module HoptoadNotifier
     # See Configuration#ignore_by_filters
     attr_reader :ignore_by_filters
 
-    # The name of the notifier library sending this notice, such as "Hoptoad Notifier"
+    # The name of the notifier library sending this notice, such as "Errornot Notifier"
     attr_reader :notifier_name
 
     # The version number of the notifier library sending this notice, such as "2.1.3"

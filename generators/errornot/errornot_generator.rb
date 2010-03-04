@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + "/lib/insert_commands.rb")
 require File.expand_path(File.dirname(__FILE__) + "/lib/rake_commands.rb")
 
-class HoptoadGenerator < Rails::Generator::Base
+class ErrornotGenerator < Rails::Generator::Base
   def add_options!(opt)
     opt.on('-k', '--api-key=key', String, "Your ErrorNot API key") {|v| options[:api_key] = v}
     opt.on('-s', '--server=host', String, "Your host with errorNot is installed") {|v| options[:host] = v}
@@ -19,7 +19,7 @@ class HoptoadGenerator < Rails::Generator::Base
     end
     record do |m|
       m.directory 'lib/tasks'
-      m.file 'hoptoad_notifier_tasks.rake', 'lib/tasks/hoptoad_notifier_tasks.rake'
+      m.file 'errornot_notifier_tasks.rake', 'lib/tasks/errornot_notifier_tasks.rake'
       if File.exists?('config/deploy.rb')
         m.append_to 'config/deploy.rb', capistrano_hook
       end
@@ -32,10 +32,10 @@ class HoptoadGenerator < Rails::Generator::Base
           m.template 'initializer.rb', 'config/errornot.rb',
             :assigns => {:api_key => options[:api_key],
           :host => options[:host]}
-          m.append_to 'config/environment.rb', "require 'config/hoptoad'"
+          m.append_to 'config/environment.rb', "require 'config/errornot'"
         end
       end
-      m.rake "hoptoad:test", :generate_only => true
+      m.rake "errornot:test", :generate_only => true
     end
   end
 
@@ -44,8 +44,8 @@ class HoptoadGenerator < Rails::Generator::Base
   end
 
   def api_key_configured?
-    File.exists?('config/initializers/hoptoad.rb') ||
-      system("grep HoptoadNotifier config/environment.rb")
+    File.exists?('config/initializers/errornot.rb') ||
+      system("grep ErrornotNotifier config/environment.rb")
   end
 
   def capistrano_hook
