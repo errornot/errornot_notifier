@@ -14,7 +14,7 @@ module ErrornotTasks
   # @option opts [String] :scm_repository Address of your repository to help with code lookups
   # @option opts [String] :local_username Who is deploying
   def self.deploy(opts = {})
-    raise NotImplemented.new("it's not implemented in errornot now")
+    raise NotImplementedError.new("it's not implemented in errornot now")
     # TODO: implement it in ErrorNot
     if ErrornotNotifier.configuration.api_key.blank?
       puts "I don't seem to be configured with an API key.  Please check your configuration."

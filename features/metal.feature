@@ -5,7 +5,7 @@ Feature: Rescue errors in Rails middleware
     And I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
 
   Scenario: Rescue an exception in the dispatcher
     When I define a Metal endpoint called "Exploder":

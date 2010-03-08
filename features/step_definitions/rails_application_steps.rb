@@ -66,7 +66,7 @@ When /^I configure the Errornot shim$/ do
   end
 end
 
-When /^I configure the notifier to use "([^\"]*)" as an API key$/ do |api_key|
+When /^I configure the notifier to use "([^\"]*)" as an API key and "([^\"]*)" as host$/ do |api_key, host|
   config_file = File.join(RAILS_ROOT, 'config', 'initializers', 'errornot.rb')
   if rails_manages_gems?
     requires = ''
@@ -78,6 +78,7 @@ When /^I configure the notifier to use "([^\"]*)" as an API key$/ do |api_key|
     #{requires}
     ErrornotNotifier.configure do |config|
       config.api_key = #{api_key.inspect}
+      config.host = #{host.inspect}
     end
   EOF
 

@@ -31,7 +31,9 @@ class LoggerTest < Test::Unit::TestCase
   end
 
   def configure
-    ErrornotNotifier.configure { |config| }
+    ErrornotNotifier.configure { |config|
+      config.host = "localhost"
+    }
   end
 
   should "report that notifier is ready when configured" do

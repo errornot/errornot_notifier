@@ -10,6 +10,7 @@ Feature: Use the notifier in a Sinatra app
       require 'errornot_notifier'
 
       ErrornotNotifier.configure do |config|
+        config.host = 'shingara.fr'
         config.api_key = 'my_api_key'
       end
 

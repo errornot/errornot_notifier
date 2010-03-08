@@ -7,7 +7,7 @@ Feature: Install the Gem in a Rails application
     When I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     Then I should receive a Errornot notification
     And I should see the Rails version
 
@@ -16,7 +16,7 @@ Feature: Install the Gem in a Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     And I uninstall the "errornot_notifier" gem
     And I run "rake errornot:test"
     Then I should receive two Errornot notifications
@@ -24,7 +24,7 @@ Feature: Install the Gem in a Rails application
   Scenario: Configure the notifier by hand
     When I generate a new Rails application
     And I configure the Errornot shim
-    And I configure the notifier to use "myapikey" as an API key
+    And I configure the notifier to use "myapikey" as an API key and "shingara.fr" as host
     And I configure my application to require the "errornot_notifier" gem
     And I run "script/generate errornot"
     Then I should receive a Errornot notification
@@ -40,7 +40,7 @@ Feature: Install the Gem in a Rails application
     And I run "capify ."
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     And I run "cap -T"
     Then I should see "deploy:notify_errornot"
 
@@ -50,25 +50,16 @@ Feature: Install the Gem in a Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     And I uninstall the "errornot_notifier" gem
     And I run "cap -T"
     Then I should see "deploy:notify_errornot"
-
-  Scenario: Try to install when the errornot_notifier plugin still exists
-    When I generate a new Rails application
-    And I install the "errornot_notifier" plugin
-    And I configure the Errornot shim
-    And I configure the notifier to use "myapikey" as an API key
-    And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot"
-    Then I should see "You must first remove the errornot_notifier plugin. Please run: script/plugin remove errornot_notifier"
 
   Scenario: Rescue an exception in a controller
     When I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey"
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     And I define a response for "TestController#index":
       """
       session[:value] = "test"

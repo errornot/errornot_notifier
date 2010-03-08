@@ -120,6 +120,7 @@ class Test::Unit::TestCase
   def reset_config
     ErrornotNotifier.configuration = nil
     ErrornotNotifier.configure do |config|
+      config.host = "localhost"
       config.api_key = 'abc123'
     end
   end
