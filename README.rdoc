@@ -204,7 +204,7 @@ One common request we see is to send shell environment variables along with
 manual exception notification.  We recommend sending them along with CGI data
 or Rack environment (:cgi_data or :rack_env keys, respectively.)
 
-See HoptoadNotifier::Notice#initialize in lib/hoptoad_notifier/notice.rb for
+See ErrornotNotifier::Notice#initialize in lib/errornot_notifier/notice.rb for
 more details.
 
 == Filtering
