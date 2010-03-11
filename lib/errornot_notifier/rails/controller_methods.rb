@@ -22,8 +22,8 @@ module ErrornotNotifier
           :session_data     => errornot_session_data,
           :controller       => params[:controller],
           :action           => params[:action],
-          :url              => hoptoad_request_url,
-          :cgi_data         => hoptoad_filter_if_filtering(request.env) }
+          :url              => errornot_request_url,
+          :cgi_data         => errornot_filter_if_filtering(request.env) }
       end
 
       def errornot_filter_if_filtering(hash)

@@ -77,8 +77,8 @@ Feature: Install the Gem in a Rails application
 
   Scenario: The gem should not be considered a framework gem
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
-    And I run "script/generate hoptoad -k myapikey"
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
     And I run "rake gems"
-    Then I should see that "hoptoad_notifier" is not considered a framework gem
+    Then I should see that "errornot_notifier" is not considered a framework gem
