@@ -1,4 +1,12 @@
-Version 1.0.0 - XXX
+Version 1.0.1 -
+===============================================================================
+
+Jason Morrison (3):
+      LH-629 Ensure notifier is not considered a framework gem ( update to ErrorNot by Cyril Mougel)
+      Removing things-the-generator-must-do file
+      Add rake cucumber:wip:rails* tasks for work-in-progress features+
+
+Version 1.0.0 - 2010/03/08
 ===============================================================================
 
 Extract from HopToad notifier code base
