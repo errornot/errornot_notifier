@@ -20,7 +20,7 @@ class ErrornotGenerator < Rails::Generator::Base
     record do |m|
       m.directory 'lib/tasks'
       m.file 'errornot_notifier_tasks.rake', 'lib/tasks/errornot_notifier_tasks.rake'
-      if File.exists?('config/deploy.rb')
+      if ['config/deploy.rb', 'Capfile'].all? { |file| File.exists?(file) }
         m.append_to 'config/deploy.rb', capistrano_hook
       end
       if options[:api_key]
