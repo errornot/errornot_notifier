@@ -85,10 +85,9 @@ Feature: Install the Gem in a Rails application
 
   Scenario: The app uses Vlad instead of Capistrano
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     And I run "touch config/deploy.rb"
     And I run "rm Capfile"
-    And I run "script/generate hoptoad -k myapikey"
-    Then "config/deploy.rb" should not contain text of "generators/hoptoad/templates/capistrano_hook.rb"
->>>>>>> a010408... don't append capistrano details to config.deploy.rb when target app uses Vlad
+    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    Then "config/deploy.rb" should not contain text of "generators/errornot/templates/capistrano_hook.rb"
