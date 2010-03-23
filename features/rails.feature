@@ -69,6 +69,7 @@ Feature: Install the Gem in a Rails application
       session[:value] = "test"
       raise RuntimeError, "some message"
       """
+    And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
     Then I should receive the following Errornot notification:
       | component     | test                                          |
