@@ -3,6 +3,7 @@ Feature: Install the Gem in a Rails application
   Background:
     Given I have built and installed the "errornot_notifier" gem
 
+  @wip
   Scenario: Use the gem without vendoring the gem in a Rails application
     When I generate a new Rails application
     And I configure the Errornot shim
@@ -16,7 +17,7 @@ Feature: Install the Gem in a Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I uninstall the "errornot_notifier" gem
     And I run "rake errornot:test"
     Then I should receive two Errornot notifications
@@ -26,13 +27,13 @@ Feature: Install the Gem in a Rails application
     And I configure the Errornot shim
     And I configure the notifier to use "myapikey" as an API key and "shingara.fr" as host
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot"
+    And I run the errornot generator with ""
     Then I should receive a Errornot notification
 
   Scenario: Try to install without an api key
     When I generate a new Rails application
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot"
+    And I run the errornot generator with ""
     Then I should see "Must pass --api-key or create config/initializers/errornot.rb"
 
   Scenario: Configure and deploy using only installed gem
@@ -40,7 +41,7 @@ Feature: Install the Gem in a Rails application
     And I run "capify ."
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I run "cap -T"
     Then I should see "deploy:notify_errornot"
 
@@ -50,7 +51,7 @@ Feature: Install the Gem in a Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I uninstall the "errornot_notifier" gem
     And I run "cap -T"
     Then I should see "deploy:notify_errornot"
@@ -59,7 +60,7 @@ Feature: Install the Gem in a Rails application
     When I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I define a response for "TestController#index":
       """
       session[:value] = "test"
@@ -79,7 +80,7 @@ Feature: Install the Gem in a Rails application
     When I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I run "rake gems"
     Then I should see that "errornot_notifier" is not considered a framework gem
 

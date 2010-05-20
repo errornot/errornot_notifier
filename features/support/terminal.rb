@@ -1,3 +1,4 @@
+require 'fileutils'
 Before do
   @terminal = Terminal.new
 end
