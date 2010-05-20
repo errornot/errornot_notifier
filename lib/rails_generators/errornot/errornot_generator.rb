@@ -28,12 +28,13 @@ class ErrornotGenerator < Rails::Generators::Base
     end
   end
 
-  # def api_key
-  #   options[:api_key]
-  # end
+  def api_key
+    options[:api_key]
+  end
 
   def generate_initializer
     api_key = options[:api_key]
+    # api_key = options[:api_key]
     template 'initializer.rb', 'config/initializers/errornot.rb'
   end
 
@@ -46,6 +47,6 @@ class ErrornotGenerator < Rails::Generators::Base
   # end
 
   def test_errornot
-    run "rake errornot:test --trace"
+    puts run("rake errornot:test --trace")
   end
 end

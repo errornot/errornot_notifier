@@ -3,13 +3,13 @@ Feature: Install the Gem in a Rails application
   Background:
     Given I have built and installed the "errornot_notifier" gem
 
-  @wip
   Scenario: Use the gem without vendoring the gem in a Rails application
     When I generate a new Rails application
     And I configure the Errornot shim
     And I configure my application to require the "errornot_notifier" gem
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
-    Then I should receive a Errornot notification
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
+    Then the command should have run successfully
+    And I should receive a Errornot notification
     And I should see the Rails version
 
   Scenario: vendor the gem and uninstall
@@ -18,9 +18,11 @@ Feature: Install the Gem in a Rails application
     And I configure my application to require the "errornot_notifier" gem
     And I unpack the "errornot_notifier" gem
     And I run the errornot generator with "-k myapikey --server=shingara.fr"
-    And I uninstall the "errornot_notifier" gem
+    Then the command should have run successfully
+    When I uninstall the "errornot_notifier" gem
     And I run "rake errornot:test"
-    Then I should receive two Errornot notifications
+    Then the command should have run successfully
+    And I should receive two Errornot notifications
 
   Scenario: Configure the notifier by hand
     When I generate a new Rails application

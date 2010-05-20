@@ -6,18 +6,8 @@ namespace :errornot do
     raise NotImplemented.new
   end
 
-  task :log_stdout do
-    require 'logger'
-    RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
-  end
-
-  desc "Verify your gem installation by sending a test exception to errornot"
-  task :test => ['errornot:log_stdout', :environment] do
-    # require 'ruby-debug'
-    # debugger
-
-    puts "running rake errornot:test task"
-
+  desc "Verify your gem installation by sending a test exception to the hoptoad service"
+  task :test => [:environment] do
     RAILS_DEFAULT_LOGGER.level = Logger::DEBUG
 
     require 'app/controllers/application_controller'
@@ -78,17 +68,15 @@ namespace :errornot do
     end
     class ErrornotVerificationController < ApplicationController; end
 
+    RailsRoot::Application.routes_reloader.reload_if_changed
     RailsRoot::Application.routes.draw do |map|
       match 'verify' => 'application#verify', :as => 'verify'
     end
 
-
     puts 'Processing request.'
+    RailsRoot::Application.configuration.logger = Logger.new(STDOUT)
     env = Rack::MockRequest.env_for("/verify")
-    response = RailsRoot::Application.call(env)
-
-    p response
-
+    RailsRoot::Application.call(env)
   end
 end
 
