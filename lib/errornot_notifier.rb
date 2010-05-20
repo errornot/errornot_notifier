@@ -9,6 +9,9 @@ require 'errornot_notifier/sender'
 require 'errornot_notifier/backtrace'
 require 'errornot_notifier/rack'
 
+#TODO: Not sure if this needs to be removed to support 2.x or not
+require 'errornot_notifier/railtie' if defined?(Rails)
+
 # Gem for applications to automatically post errors to the Errornot of their choice.
 module ErrornotNotifier
 
