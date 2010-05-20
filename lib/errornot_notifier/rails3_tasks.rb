@@ -6,11 +6,11 @@ namespace :errornot do
     raise NotImplemented.new
   end
 
-  desc "Verify your gem installation by sending a test exception to the hoptoad service"
+  desc "Verify your gem installation by sending a test exception to the errornot service"
   task :test => [:environment] do
     Rails.logger = Logger.new(STDOUT)
     Rails.logger.level = Logger::DEBUG
-    HoptoadNotifier.configure(true) do |config|
+    ErrornotNotifier.configure(true) do |config|
       config.logger = Rails.logger
     end
 
