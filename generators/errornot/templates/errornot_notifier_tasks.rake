@@ -6,5 +6,18 @@ unless ARGV.any? {|a| a =~ /^gems/}
     $: << File.join(vendored_notifier, 'lib')
   end
 
-  require 'errornot_notifier/tasks'
+  begin
+    require 'errornot_notifier/tasks'
+  rescue LoadError => exception
+    namespace :errornot do
+      %w(test log_stdout).each do |task_name|
+        desc "Missing dependency for errornot:#{task_name}"
+        task task_name do
+          $stderr.puts "Failed to run errornot:#{task_name} because of missing dependency."
+          $stderr.puts "You probably need to run `rake gems:install` to install the errornot_notifier gem"
+          abort exception.inspect
+        end
+      end
+    end
+  end
 end
