@@ -11,18 +11,18 @@ class ErrornotGenerator < Rails::Generators::Base
 
   def install
     ensure_api_key_was_configured
-    generate_initializer
+    generate_initializer unless api_key_configured?
     test_errornot
   end
 
   private
 
   def ensure_api_key_was_configured
-    if !options[:api_key] # && !api_key_configured?
+    if !options[:api_key]  && !api_key_configured?
       puts "Must pass --api-key or create config/initializers/errornot.rb"
       exit
     end
-    if !options[:server] # && !api_key_configured?
+    if !options[:server]  && !api_key_configured?
       puts "Must pass --server or create config/initializers/errornot.rb"
       exit
     end
@@ -33,18 +33,12 @@ class ErrornotGenerator < Rails::Generators::Base
   end
 
   def generate_initializer
-    api_key = options[:api_key]
-    # api_key = options[:api_key]
     template 'initializer.rb', 'config/initializers/errornot.rb'
   end
 
-  # Justified by scenario:
-  #
-  # Scenario: Configure the notifier by hand
-  #
-  # def api_key_configured?
-  #   File.exists?('config/initializers/hoptoad.rb') || system("grep HoptoadNotifier config/environment.rb")
-  # end
+  def api_key_configured?
+    File.exists?('config/initializers/hoptoad.rb')
+  end
 
   def test_errornot
     puts run("rake errornot:test --trace")
