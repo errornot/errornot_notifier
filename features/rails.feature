@@ -56,6 +56,7 @@ Feature: Install the Gem in a Rails application
     And I unpack the "errornot_notifier" gem
     And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I uninstall the "errornot_notifier" gem
+   And I install cached gems
     And I run "cap -T"
     Then I should see "deploy:notify_errornot"
 
