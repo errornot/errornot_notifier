@@ -119,15 +119,15 @@ module ErrornotNotifier
           'component' => controller,
           'action' => action}
 
-        unless parameters.blank?
+        unless parameters.nil? || parameters.empty?
           error['request']['params'] = parameters
         end
 
-        unless session_data.blank?
+        unless session_data.nil? || session_data.empty?
           error['session'] = session_data
         end
 
-        unless cgi_data.blank?
+        unless cgi_data.nil? || cgi_data.empty?
           error['request']['cgi-data'] = cgi_data
         end
         error['environment'] = {'root' => project_root,
