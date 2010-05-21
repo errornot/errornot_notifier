@@ -14,7 +14,7 @@ Feature: Use the notifier in a Sinatra app
         config.api_key = 'my_api_key'
       end
 
-      class FontaneApp < Sinatra::Default
+      class FontaneApp < Sinatra::Base
         use ErrornotNotifier::Rack
         enable :raise_errors
 
