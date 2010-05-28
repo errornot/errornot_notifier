@@ -12,8 +12,8 @@ module ErrornotNotifier
     config.after_initialize do
       ErrornotNotifier.configure(true) do |config|
         config.logger           = Rails.logger
-        # config.environment_name = Rails.env
-        # config.project_root     = Rails.root
+        config.environment_name = Rails.env
+        config.project_root     = Rails.root
         config.framework        = "Rails: #{::Rails::VERSION::STRING}"
       end
     end
