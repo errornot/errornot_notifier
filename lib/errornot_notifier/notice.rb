@@ -95,6 +95,7 @@ module ErrornotNotifier
         "#{exception.class.name}: #{exception.message}"
       end
 
+      also_use_rack_params_filters
       find_session_data
       clean_params
     end
@@ -297,5 +298,12 @@ module ErrornotNotifier
     def rack_session
       args[:rack_env]['rack.session'] if args[:rack_env]
     end
+
+    def also_use_rack_params_filters
+      if args[:rack_env]
+        self.params_filters += rack_request.env["action_dispatch.parameter_filter"]
+      end
+    end
+
   end
 end
