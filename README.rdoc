@@ -17,6 +17,19 @@ In your config/environment* files, remove all references to ExceptionNotifier
 
 Remove the vendor/plugins/exception_notifier directory.
 
+=== Rails 3.x
+
+Add the errornot_notifier gem to your Gemfile.  In Gemfile:
+
+  gem 'errornot_notifier'
+
+Then from your project's RAILS_ROOT, run:
+
+  bundle install
+  script/rails generate errornot --api-key your_key_here --server your_host
+
+That's it!
+
 === Rails 2.x
 
 Add the errornot_notifier gem to your app. In config/environment.rb:

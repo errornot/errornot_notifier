@@ -8,7 +8,7 @@ module ErrornotNotifier
     end
 
     initializer "errornot.use_rack_middleware" do |app|
-      config.app_middleware.insert_after "::ActionDispatch::ShowExceptions", "ErrornotNotifier::Rack"
+      config.app_middleware.use "ErrornotNotifier::Rack"
     end
 
     config.after_initialize do
