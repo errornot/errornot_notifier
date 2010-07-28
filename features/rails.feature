@@ -22,7 +22,7 @@ Feature: Install the Gem in a Rails application
     When I uninstall the "errornot_notifier" gem
     And I install cached gems
     And I run "rake errornot:test"
-    Then the command should have run successfully
+    Then I should see "** [Errornot] Success: Net::HTTPOK"
     And I should receive two Errornot notifications
 
   Scenario: Configure the notifier by hand
