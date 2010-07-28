@@ -72,14 +72,14 @@ namespace :errornot do
     end
     class ErrornotVerificationController < ApplicationController; end
 
-    RailsRoot::Application.routes_reloader.reload_if_changed
-    RailsRoot::Application.routes.draw do |map|
+    Rails::Application.routes_reloader.reload_if_changed
+    Rails::Application.routes.draw do |map|
       match 'verify' => 'application#verify', :as => 'verify'
     end
 
     puts 'Processing request.'
     env = Rack::MockRequest.env_for("/verify")
-    RailsRoot::Application.call(env)
+    Rails::Application.call(env)
   end
 end
 
