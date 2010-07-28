@@ -95,5 +95,5 @@ Feature: Install the Gem in a Rails application
     And I configure my application to require the "errornot_notifier" gem
     And I run "touch config/deploy.rb"
     And I run "rm Capfile"
-    And I run "script/generate errornot -k myapikey --server=shingara.fr"
-    Then "config/deploy.rb" should not contain text of "generators/errornot/templates/capistrano_hook.rb"
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
+    Then "config/deploy.rb" should not contain "capistrano"

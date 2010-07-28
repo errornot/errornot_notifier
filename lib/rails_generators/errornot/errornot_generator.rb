@@ -37,7 +37,7 @@ class ErrornotGenerator < Rails::Generators::Base
   end
 
   def api_key_configured?
-    File.exists?('config/initializers/hoptoad.rb')
+    File.exists?('config/initializers/errornot.rb')
   end
 
   def test_errornot
