@@ -26,11 +26,8 @@ Add the errornot_notifier gem to your app. In config/environment.rb:
 Then from your project's RAILS_ROOT, run:
 
   rake gems:install
-  script/generate errornot --api-key your_key_here --server your_host
-
-Once installed, you should vendor the errornot_notifier gem.
-
   rake gems:unpack GEM=errornot_notifier
+  script/generate errornot --api-key your_key_here --server your_host
 
 As always, if you choose not to vendor the errornot_notifier gem, make sure
 every server you deploy to has the gem installed or your application won't start.
