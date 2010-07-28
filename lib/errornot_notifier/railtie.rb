@@ -7,7 +7,7 @@ module ErrornotNotifier
       require "errornot_notifier/rails3_tasks"
     end
 
-    config.middleware.insert_after ActionDispatch::ShowExceptions, ErrornotNotifier::Rack
+    config.app_middleware.insert_after "::ActionDispatch::ShowExceptions", "ErrornotNotifier::Rack"
 
     config.after_initialize do
       ErrornotNotifier.configure(true) do |config|
