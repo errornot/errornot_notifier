@@ -6,7 +6,7 @@ class ErrornotGenerator < Rails::Generators::Base
   class_option :server, :type => :string, :desc => "Your host of Errornot"
 
   def self.source_root
-    @_errornot_source_root ||= File.expand_path("../../../../generators/errornot/templates", __FILE__)
+    @_errornot_source_root ||= File.expand_path("../../../../../generators/errornot/templates", __FILE__)
   end
 
   def install
