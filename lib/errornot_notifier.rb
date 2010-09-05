@@ -1,7 +1,7 @@
 require 'net/http'
 require 'net/https'
 require 'rubygems'
-require 'activesupport'
+require 'active_support'
 require 'errornot_notifier/version'
 require 'errornot_notifier/configuration'
 require 'errornot_notifier/notice'
