@@ -14,7 +14,7 @@ module ErrornotNotifier
         path = File.join(File.dirname(__FILE__), '..', '..', 'templates', 'javascript_notifier.erb')
         host = ErrornotNotifier.configuration.host.dup
         port = ErrornotNotifier.configuration.port
-        host << ":#{port}" unless port == 80
+        host << ":#{port}" unless [80, 443].include?(port)
 
         options = {
           :file          => path,
@@ -22,6 +22,7 @@ module ErrornotNotifier
           :use_full_path => false,
           :locals        => {
             :host        => host,
+            :secure      => ErrornotNotifier.configuration.secure,
             :api_key     => ErrornotNotifier.configuration.api_key,
             :environment => ErrornotNotifier.configuration.environment_name
           }
