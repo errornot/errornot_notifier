@@ -2,6 +2,7 @@ require 'errornot_notifier'
 require 'errornot_notifier/rails/controller_methods'
 require 'errornot_notifier/rails/action_controller_catcher'
 require 'errornot_notifier/rails/error_lookup'
+require 'errornot_notifier/rails/javascript_notifier'
 
 module ErrornotNotifier
   module Rails
@@ -10,6 +11,7 @@ module ErrornotNotifier
         ActionController::Base.send(:include, ErrornotNotifier::Rails::ActionControllerCatcher)
         ActionController::Base.send(:include, ErrornotNotifier::Rails::ErrorLookup)
         ActionController::Base.send(:include, ErrornotNotifier::Rails::ControllerMethods)
+        ActionController::Base.send(:include, ErrornotNotifier::Rails::JavascriptNotifier)
       end
 
       rails_logger = if defined?(::Rails.logger)
