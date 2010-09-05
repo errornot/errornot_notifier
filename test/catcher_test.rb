@@ -214,10 +214,12 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
     assert_sent_request_info_for controller.request
   end
 
-  should "use standard rails logging filters on params and env" do
+  should "use standard rails logging filters on params and session and env" do
     filtered_params = { "abc" => "123",
                         "def" => "456",
                         "ghi" => "[FILTERED]" }
+    filtered_session = { "abc" => "123",
+                         "ghi" => "[FILTERED]" }
     ENV['ghi'] = 'abc'
     filtered_env = { 'ghi' => '[FILTERED]' }
     filtered_cgi = { 'REQUEST_METHOD' => '[FILTERED]' }
@@ -225,10 +227,12 @@ class ActionControllerCatcherTest < Test::Unit::TestCase
     process_action_with_automatic_notification(:filters => [:ghi, :request_method],
                                                :params => { "abc" => "123",
                                                             "def" => "456",
-                                                            "ghi" => "789" })
-    assert_equal filtered_params, last_sent_notice_document['error']['request']['params']
-    assert last_sent_notice_document['error']['request']['cgi-data'].include?('REQUEST_METHOD')
-    assert_equal '[FILTERED]', last_sent_notice_document['error']['request']['cgi-data']['REQUEST_METHOD']
+                                                            "ghi" => "789" },
+                                               :session => { "abc" => "123",
+                                                             "ghi" => "789" })
+    assert_sent_hash filtered_params, '/notice/request/params'
+    assert_sent_hash filtered_cgi, '/notice/request/cgi-data'
+    assert_sent_hash filtered_session, '/notice/request/session'
   end
 
   context "for a local error with development lookup enabled" do

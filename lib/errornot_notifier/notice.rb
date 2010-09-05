@@ -231,6 +231,7 @@ module ErrornotNotifier
       end
       if session_data
         clean_unserializable_data_from(:session_data)
+        filter(session_data)
       end
     end
 
@@ -248,7 +249,7 @@ module ErrornotNotifier
 
     def filter_key?(key)
       params_filters.any? do |filter|
-        key.to_s.include?(filter)
+        key.to_s.include?(filter.to_s)
       end
     end
 
