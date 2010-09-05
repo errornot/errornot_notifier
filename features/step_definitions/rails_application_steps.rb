@@ -213,8 +213,9 @@ Then /^I should receive the following Errornot notification:$/ do |table|
   doc.should be_include("error[message]=#{URI.escape(hash['error message'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
   doc.should be_include("error[request][url]=#{URI.escape(hash['url'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
 
-  doc.should be_include("error[request][component]=#{URI.escape(hash['component'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}") if hash['component']
-  doc.should be_include("error[request][action]=#{URI.escape(hash['action'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}") if hash['action']
+  doc.should have_content('//component', hash['component']) if hash['component']
+  doc.should have_content('//action', hash['action']) if hash['action']
+  doc.should have_content('//server-environment/project-root', hash['project-root']) if hash['project-root']
 
   if hash['session']
     sessions = hash['session'].split(': ')
