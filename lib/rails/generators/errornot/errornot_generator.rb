@@ -3,6 +3,7 @@ require 'rails/generators'
 class ErrornotGenerator < Rails::Generators::Base
 
   class_option :api_key, :aliases => "-k", :type => :string, :desc => "Your Errornot API key"
+  class_option :heroku, :type => :boolean, :desc => "Use the Heroku addon to provide your Hoptoad API key"
   class_option :server, :type => :string, :desc => "Your host of Errornot"
 
   def self.source_root
@@ -18,18 +19,22 @@ class ErrornotGenerator < Rails::Generators::Base
   private
 
   def ensure_api_key_was_configured
-    if !options[:api_key]  && !api_key_configured?
-      puts "Must pass --api-key or create config/initializers/errornot.rb"
+    if !options[:api_key] && !options[:heroku] && !api_key_configured?
+      puts "Must pass --api-key or --heroku create config/initializers/errornot.rb"
       exit
     end
-    if !options[:server]  && !api_key_configured?
+    if !options[:server] && !api_key_configured?
       puts "Must pass --server or create config/initializers/errornot.rb"
       exit
     end
   end
 
-  def api_key
-    options[:api_key]
+  def api_key_expression
+    s = if options[:api_key]
+          "'#{options[:api_key]}'"
+        elsif options[:heroku]
+          "ENV['HOPTOAD_API_KEY']"
+        end
   end
 
   def generate_initializer
