@@ -36,7 +36,7 @@ class ErrornotGenerator < Rails::Generator::Base
           m.append_to 'config/environment.rb', "require 'config/errornot'"
         end
       end
-      m.rake "errornot:test", :generate_only => true
+      m.rake "errornot:test --trace", :generate_only => true
     end
   end
 
