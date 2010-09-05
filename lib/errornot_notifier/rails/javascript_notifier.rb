@@ -8,6 +8,7 @@ module ErrornotNotifier
       private
 
       def insert_errornot_javascript_notifier
+        return unless ErrornotNotifier.configuration.public?
         return unless ErrornotNotifier.configuration.js_notifier
 
         path = File.join(File.dirname(__FILE__), '..', '..', 'templates', 'javascript_notifier.erb')
