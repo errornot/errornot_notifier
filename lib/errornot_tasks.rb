@@ -31,10 +31,10 @@ module ErrornotTasks
     opts.each {|k,v| params["deploy[#{k}]"] = v }
 
     url = URI.parse("http://#{ErrornotNotifier.configuration.host}/deploys")
-    proxy = Net::HTTP.Proxy(HoptoadNotifier.configuration.proxy_host,
-                            HoptoadNotifier.configuration.proxy_port,
-                            HoptoadNotifier.configuration.proxy_user,
-                            HoptoadNotifier.configuration.proxy_pass)
+    proxy = Net::HTTP.Proxy(ErrornotNotifier.configuration.proxy_host,
+                            ErrornotNotifier.configuration.proxy_port,
+                            ErrornotNotifier.configuration.proxy_user,
+                            ErrornotNotifier.configuration.proxy_pass)
 
     response = proxy.post_form(url, params)
 

@@ -315,7 +315,7 @@ not working properly.
 To automatically include the Javascript node on every page, set the
 :js_notifier to true:
 
-  HoptoadNotifier.configure do |config|
+  ErrornotNotifier.configure do |config|
     config.js_notifier = true
   end
 
