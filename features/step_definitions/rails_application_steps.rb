@@ -108,7 +108,6 @@ When /^I configure the notifier to use the following configuration lines:$/ do |
   initializer_code = <<-EOF
     #{requires}
     ErrornotNotifier.configure do |config|
-    HoptoadNotifier.configure do |config|
       #{configuration_lines}
     end
   EOF
@@ -125,11 +124,11 @@ When /^I configure the notifier to use the following configuration lines:$/ do |
 end
 
 def rails_initializer_file
-  File.join(RAILS_ROOT, 'config', 'initializers', 'hoptoad.rb')
+  File.join(RAILS_ROOT, 'config', 'initializers', 'errornot.rb')
 end
 
-def rails_non_initializer_hoptoad_config_file
-  File.join(RAILS_ROOT, 'config', 'hoptoad.rb')
+def rails_non_initializer_errornot_config_file
+  File.join(RAILS_ROOT, 'config', 'errornot.rb')
 end
 
 Then /^I should see "([^\"]*)"$/ do |expected_text|
@@ -267,11 +266,11 @@ Then /^"([^\"]*)" should not contain "([^\"]*)"$/ do |file_path, text|
   end
 end
 
-Then /^my Hoptoad configuration should contain the following line:$/ do |line|
+Then /^my Errornot configuration should contain the following line:$/ do |line|
   configuration_file = if rails_supports_initializers?
     rails_initializer_file
   else
-    rails_non_initializer_hoptoad_config_file
+    rails_non_initializer_errornot_config_file
     # environment_path
   end
 
@@ -321,7 +320,7 @@ end
 
 Then /^I should see the notifier JavaScript for the following:$/ do |table|
   hash = table.hashes.first
-  host        = hash['host']        || 'hoptoadapp.com'
+  host        = hash['host']        || 'shingara.fr'
   secure      = hash['secure']      || false
   api_key     = hash['api_key']
   environment = hash['environment'] || 'production'
@@ -330,9 +329,9 @@ Then /^I should see the notifier JavaScript for the following:$/ do |table|
   response.at_css("script[type='text/javascript'][src='http#{'s' if secure}://#{host}/javascripts/notifier.js']").should_not be_nil
   response.css("script[type='text/javascript']:last-child").each do |element|
     content = element.content
-    content.should include("Hoptoad.setKey('#{api_key}');")
-    content.should include("Hoptoad.setHost('#{host}');")
-    content.should include("Hoptoad.setEnvironment('#{environment}');")
+    content.should include("Errornot.setKey('#{api_key}');")
+    content.should include("Errornot.setHost('#{host}');")
+    content.should include("Errornot.setEnvironment('#{environment}');")
   end
 end
 

@@ -1,15 +1,16 @@
 Feature: Install the Gem in a Rails application and enable the JavaScript notifier
 
   Background:
-    Given I have built and installed the "hoptoad_notifier" gem
+    Given I have built and installed the "errornot_notifier" gem
 
   Scenario: Include the Javascript notifier when enabled
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key     = "myapikey"
+      config.host      = "shingara.fr"
       config.js_notifier = true
       """
     And I define a response for "TestController#index":
@@ -20,16 +21,16 @@ Feature: Install the Gem in a Rails application and enable the JavaScript notifi
     And I perform a request to "http://example.com:123/test/index"
     Then I should see the notifier JavaScript for the following:
       | api_key  | environment | host           |
-      | myapikey | production  | hoptoadapp.com |
+      | myapikey | production  | shingara.fr |
 
   Scenario: Include the Javascript notifier when enabled using custom configuration settings
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key     = "myapikey!"
-      config.host        = "myhoptoad.com"
+      config.host        = "shingara.fr"
       config.port        = 3001
       config.js_notifier = true
       """
@@ -41,12 +42,12 @@ Feature: Install the Gem in a Rails application and enable the JavaScript notifi
     And I perform a request to "http://example.com:123/test/index"
     Then I should see the notifier JavaScript for the following:
       | api_key   | environment | host               |
-      | myapikey! | production  | myhoptoad.com:3001 |
+      | myapikey! | production  | shingara.fr:3001 |
 
   Scenario: Don't include the Javascript notifier by default
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey!"
@@ -61,8 +62,8 @@ Feature: Install the Gem in a Rails application and enable the JavaScript notifi
 
   Scenario: Don't include the Javascript notifier when enabled in non-public environments
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key          = "myapikey!"
@@ -79,12 +80,13 @@ Feature: Install the Gem in a Rails application and enable the JavaScript notifi
 
   Scenario: Include the Javascript notifier correctly when secure
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key     = "myapikey"
       config.secure      = true
+      config.host        = "shingara.fr"
       config.js_notifier = true
       """
     And I define a response for "TestController#index":
@@ -95,4 +97,4 @@ Feature: Install the Gem in a Rails application and enable the JavaScript notifi
     And I perform a request to "http://example.com:123/test/index"
     Then I should see the notifier JavaScript for the following:
       | api_key  | environment | host           | secure |
-      | myapikey | production  | hoptoadapp.com | true   |
+      | myapikey | production  | shingara.fr | true   |

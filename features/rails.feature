@@ -35,9 +35,9 @@ Feature: Install the Gem in a Rails application
 
   Scenario: Configuration within initializer isn't overridden by Railtie
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
-    And I run the hoptoad generator with "-k myapikey"
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     Then the command should have run successfully
     When I configure the notifier to use the following configuration lines:
       """
@@ -51,7 +51,7 @@ Feature: Install the Gem in a Rails application
       """
     And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | project-root | argle/bargle |
 
   Scenario: Try to install without an api key
@@ -121,24 +121,24 @@ Feature: Install the Gem in a Rails application
 
   Scenario: Support the Heroku addon in the generator
     When I generate a new Rails application
-    And I configure the Hoptoad shim
+    And I configure the Errornot shim
     And I configure the Heroku rake shim
-    And I configure my application to require the "hoptoad_notifier" gem
+    And I configure my application to require the "errornot_notifier" gem
     And I set the environment variable "HOPTOAD_API_KEY" to "myapikey"
-    And I run the hoptoad generator with "--heroku"
+    And I run the errornot generator with "--heroku"
     Then the command should have run successfully
-    And I should receive a Hoptoad notification
+    And I should receive a Errornot notification
     And I should see the Rails version
-    And my Hoptoad configuration should contain the following line:
+    And my Errornot configuration should contain the following line:
       """
       config.api_key = ENV['HOPTOAD_API_KEY']
       """
 
   Scenario: Filtering parameters in a controller
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
-    And I run the hoptoad generator with "-k myapikey"
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey"
@@ -151,7 +151,7 @@ Feature: Install the Gem in a Rails application
       """
     And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | component     | test                                          |
       | action        | index                                         |
       | error message | RuntimeError: some message                    |
@@ -161,9 +161,9 @@ Feature: Install the Gem in a Rails application
 
   Scenario: Filtering session in a controller
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
-    And I run the hoptoad generator with "-k myapikey"
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey"
@@ -176,7 +176,7 @@ Feature: Install the Gem in a Rails application
       """
     And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | component     | test                                          |
       | action        | index                                         |
       | error message | RuntimeError: some message                    |
@@ -186,9 +186,9 @@ Feature: Install the Gem in a Rails application
 
   Scenario: Filtering session and params based on Rails parameter filters
     When I generate a new Rails application
-    And I configure the Hoptoad shim
-    And I configure my application to require the "hoptoad_notifier" gem
-    And I run the hoptoad generator with "-k myapikey"
+    And I configure the Errornot shim
+    And I configure my application to require the "errornot_notifier" gem
+    And I run the errornot generator with "-k myapikey --server=shingara.fr"
     And I configure the application to filter parameter "secret"
     And I define a response for "TestController#index":
       """
@@ -198,7 +198,7 @@ Feature: Install the Gem in a Rails application
       """
     And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
-    Then I should receive the following Hoptoad notification:
+    Then I should receive the following Errornot notification:
       | component     | test                                          |
       | action        | index                                         |
       | error message | RuntimeError: some message                    |

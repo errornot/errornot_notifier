@@ -19,7 +19,7 @@ module ErrornotNotifier
 
       def errornot_request_data
         { :parameters       => errornot_filter_if_filtering(params.to_hash),
-          :session_data     => hoptoad_filter_if_filtering(errornot_session_data),
+          :session_data     => errornot_filter_if_filtering(errornot_session_data),
           :controller       => params[:controller],
           :action           => params[:action],
           :url              => errornot_request_url,

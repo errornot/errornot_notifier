@@ -20,9 +20,9 @@ module ErrornotNotifier
       end
 
       if defined?(::ActionController::Base)
-        require 'hoptoad_notifier/rails/javascript_notifier'
+        require 'errornot_notifier/rails/javascript_notifier'
 
-        ::ActionController::Base.send(:include, HoptoadNotifier::Rails::JavascriptNotifier)
+        ::ActionController::Base.send(:include, ErrornotNotifier::Rails::JavascriptNotifier)
       end
     end
 

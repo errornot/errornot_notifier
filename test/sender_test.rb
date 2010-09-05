@@ -39,7 +39,7 @@ class SenderTest < Test::Unit::TestCase
     proxy    = stub(:new => http)
     Net::HTTP.stubs(:Proxy => proxy)
 
-    url = "http://hoptoadapp.com:80#{ErrornotNotifier::Sender::NOTICES_URI}"
+    url = "http://shingara.fr:80#{ErrornotNotifier::Sender::NOTICES_URI}"
     uri = URI.parse(url)
 
     proxy_host = 'some.host'
@@ -61,7 +61,7 @@ class SenderTest < Test::Unit::TestCase
 
   should "post to the right url for non-ssl" do
     http = stub_http
-    url = "http://hoptoadapp.com:80#{ErrornotNotifier::Sender::NOTICES_URI}"
+    url = "http://shingara.fr:80#{ErrornotNotifier::Sender::NOTICES_URI}"
     uri = URI.parse(url)
     send_exception(:secure => false)
     assert_received(http, :post) {|expect| expect.with(uri.path, anything, ErrornotNotifier::HEADERS) }
