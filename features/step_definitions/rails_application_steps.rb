@@ -209,24 +209,23 @@ Then /^I should receive the following Errornot notification:$/ do |table|
 
   hash = table.transpose.hashes.first
 
-  doc.should be_include("error[message]=#{URI.escape(hash['error message'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
-  doc.should be_include("error[request][url]=#{URI.escape(hash['url'], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
-
-  doc.should have_content('//component', hash['component']) if hash['component']
-  doc.should have_content('//action', hash['action']) if hash['action']
+  doc.should have_content("error[message]", hash['error message'])
+  doc.should have_content("error[request][url]", hash['url'])
+  doc.should have_content('error[request][component]', hash['component']) if hash['component']
+  doc.should have_content('error[request][action]', hash['action']) if hash['action']
   doc.should have_content('//server-environment/project-root', hash['project-root']) if hash['project-root']
 
   if hash['session']
     sessions = hash['session'].split(': ')
     sessions.each_slice(2).each do |session|
-      doc.should be_include("error[session][#{session[0]}]=#{URI.escape(session[1], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
+      doc.should have_content("error[session][#{session[0]}]", session[1])
     end
   end
 
   if hash['parameters']
     params = hash['parameters'].split(': ')
     params.each_slice(2).each do |param|
-      doc.should be_include("error[request][params][#{param[0]}]=#{URI.escape(param[1], Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}")
+      doc.should have_content("error[request][params][#{param[0]}]", param[1])
     end
   end
 end
@@ -266,7 +265,7 @@ Then /^"([^\"]*)" should not contain "([^\"]*)"$/ do |file_path, text|
   end
 end
 
-Then /^my Errornot configuration should contain the following line:$/ do |line|
+Then /^my Errornot configuration should contain the following line:$/ do |lines|
   configuration_file = if rails_supports_initializers?
     rails_initializer_file
   else
@@ -275,8 +274,10 @@ Then /^my Errornot configuration should contain the following line:$/ do |line|
   end
 
   configuration = File.read(configuration_file)
-  if ! configuration.include?(line.strip)
-    raise "Expected text:\n#{configuration}\nTo include:\n#{line}\nBut it didn't."
+  lines.split("\n").each do |line|
+    if ! configuration.include?(line.strip)
+      raise "Expected text:\n#{configuration}\nTo include:\n#{line}\nBut it didn't."
+    end
   end
 end
 

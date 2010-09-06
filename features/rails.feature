@@ -42,6 +42,7 @@ Feature: Install the Gem in a Rails application
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey"
+      config.host = 'shingara.fr'
       config.project_root = "argle/bargle"
       """
     And I define a response for "TestController#index":
@@ -52,34 +53,13 @@ Feature: Install the Gem in a Rails application
     And I route "/test/index" to "test#index"
     And I perform a request to "http://example.com:123/test/index?param=value"
     Then I should receive the following Errornot notification:
-      | project-root | argle/bargle |
+      | error message | RuntimeError: some message |
 
   Scenario: Try to install without an api key
     When I generate a new Rails application
     And I configure my application to require the "errornot_notifier" gem
     And I run the errornot generator with ""
     Then I should see "Must pass --api-key or --heroku or create config/initializers/errornot.rb"
-
-  Scenario: Configure and deploy using only installed gem
-    When I generate a new Rails application
-    And I run "capify ."
-    And I configure the Errornot shim
-    And I configure my application to require the "errornot_notifier" gem
-    And I run the errornot generator with "-k myapikey --server=shingara.fr"
-    And I run "cap -T"
-    Then I should see "deploy:notify_errornot"
-
-  Scenario: Configure and deploy using only vendored gem
-    When I generate a new Rails application
-    And I run "capify ."
-    And I configure the Errornot shim
-    And I configure my application to require the "errornot_notifier" gem
-    And I unpack the "errornot_notifier" gem
-    And I run the errornot generator with "-k myapikey --server=shingara.fr"
-    And I uninstall the "errornot_notifier" gem
-   And I install cached gems
-    And I run "cap -T"
-    Then I should see "deploy:notify_errornot"
 
   Scenario: Rescue an exception in a controller
     When I generate a new Rails application
@@ -125,13 +105,14 @@ Feature: Install the Gem in a Rails application
     And I configure the Heroku rake shim
     And I configure my application to require the "errornot_notifier" gem
     And I set the environment variable "HOPTOAD_API_KEY" to "myapikey"
-    And I run the errornot generator with "--heroku"
+    And I run the errornot generator with "--heroku --server=shingara.fr"
     Then the command should have run successfully
     And I should receive a Errornot notification
     And I should see the Rails version
     And my Errornot configuration should contain the following line:
       """
       config.api_key = ENV['HOPTOAD_API_KEY']
+      config.host = 'shingara.fr'
       """
 
   Scenario: Filtering parameters in a controller
@@ -142,6 +123,7 @@ Feature: Install the Gem in a Rails application
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey"
+      config.host = 'shingara.fr'
       config.params_filters << "credit_card_number"
       """
     And I define a response for "TestController#index":
@@ -167,6 +149,7 @@ Feature: Install the Gem in a Rails application
     When I configure the notifier to use the following configuration lines:
       """
       config.api_key = "myapikey"
+      config.host = 'shingara.fr'
       config.params_filters << "secret"
       """
     And I define a response for "TestController#index":

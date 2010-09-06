@@ -1,33 +1,42 @@
-RSpec::Matchers.define :have_content do |xpath, content|
+require 'rack/utils'
+RSpec::Matchers.define :have_content do |key, content|
   match do |document|
-    @elements = document.search(xpath)
-
-    if @elements.empty?
+    document = Rack::Utils.parse_nested_query(document)
+    key =~ /([^\[]+)(\[([^\]]+)\])?(\[([^\]]+)\])?(\[([^\]]+)\])?/
+    one = $1
+    two = $3
+    three = $5
+    four = $7
+    if one
+      @elements = document.send("[]", one)
+    end
+    if two
+      @elements = @elements.send("[]", two)
+    end
+    if three
+      @elements = @elements.send("[]", three)
+    end
+    if four
+      @elements = @elements.send("[]", four)
+    end
+    unless @elements
       false
     else
-      element_with_content = document.at("#{xpath}[contains(.,'#{content}')]")
-
-      if element_with_content.nil?
-        @found = @elements.collect { |element| element.content }
-
-        false
-      else
-        true
-      end
+      @elements == content
     end
   end
 
   failure_message_for_should do |document|
-    if @elements.empty?
-      "In XML:\n#{document}\nNo element at #{xpath}"
+    unless @elements
+      "In JSON:\n#{document}\nNo element at #{key}"
     else
-      "In XML:\n#{document}\nGot content #{@found.inspect} at #{xpath} instead of #{content.inspect}"
+      "In JSON:\n#{document}\nGot content #{@elements.inspect} at #{key} instead of #{content.inspect}"
     end
   end
 
   failure_message_for_should_not do |document|
-    unless @elements.empty?
-      "In XML:\n#{document}\nExpcted no content #{content.inspect} at #{xpath}"
+    if @elements
+      "In JSON:\n#{document}\nExpcted no content #{content.inspect} at #{key}"
     end
   end
 end

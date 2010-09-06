@@ -3,5 +3,5 @@ require 'errornot_notifier/rails'
 <% end -%>
 ErrornotNotifier.configure do |config|
   config.api_key = <%= api_key_expression %>
-  config.host = '<%= host %>'
+  config.host = '<%= options[:server] %>'
 end

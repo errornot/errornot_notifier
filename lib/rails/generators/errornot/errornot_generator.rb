@@ -20,7 +20,7 @@ class ErrornotGenerator < Rails::Generators::Base
 
   def ensure_api_key_was_configured
     if !options[:api_key] && !options[:heroku] && !api_key_configured?
-      puts "Must pass --api-key or --heroku create config/initializers/errornot.rb"
+      puts "Must pass --api-key or --heroku or create config/initializers/errornot.rb"
       exit
     end
     if !options[:server] && !api_key_configured?
