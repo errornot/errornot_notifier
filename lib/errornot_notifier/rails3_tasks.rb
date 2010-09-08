@@ -14,7 +14,7 @@ namespace :errornot do
       config.logger = Rails.logger
     end
 
-    require 'app/controllers/application_controller'
+    require Rails.root.join('app/controllers/application_controller.rb')
 
     class ErrornotTestingException < RuntimeError; end
 
