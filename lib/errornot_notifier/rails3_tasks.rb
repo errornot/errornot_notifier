@@ -23,6 +23,11 @@ namespace :errornot do
       exit
     end
 
+    unless ErrornotNotifier.configuration.host
+      puts "Errornot needs a host configured! Check the README to see how to add it."
+      exit
+    end
+
     ErrornotNotifier.configuration.development_environments = []
 
     puts "Configuration:"
