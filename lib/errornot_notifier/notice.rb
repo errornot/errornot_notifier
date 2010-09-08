@@ -79,7 +79,7 @@ module ErrornotNotifier
       self.ignore              = args[:ignore]              || []
       self.ignore_by_filters   = args[:ignore_by_filters]   || []
       self.backtrace_filters   = args[:backtrace_filters]   || []
-      self.params_filters      = args[:params_filters]      || []
+      @params_filters      = args[:params_filters]      || []
       self.parameters          = args[:parameters] ||
                                    action_dispatch_params ||
                                    rack_env(:params) ||
@@ -308,7 +308,7 @@ module ErrornotNotifier
 
     def also_use_rack_params_filters
       if args[:rack_env]
-        self.params_filters += rack_request.env["action_dispatch.parameter_filter"] || []
+        @params_filters += rack_request.env["action_dispatch.parameter_filter"] || []
       end
     end
 
